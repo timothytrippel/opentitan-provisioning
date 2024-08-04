@@ -1,0 +1,81 @@
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+package(default_visibility = ["//visibility:public"])
+
+go_library(
+    name = "spm",
+    importpath = "github.com/lowRISC/ot-provisioning/src/spm/services/spm",
+    srcs = ["spm.go"],
+    deps = [
+        ":certloader",
+        ":se",
+        "//src/message_client",
+        "//src/pa/proto:pa_go_pb",
+        "//src/pk11",
+        "//src/spm/proto:spm_go_pb",
+        "//src/cert:signer",
+        "//src/proto:device_id_go_pb",
+        "//src/proto/crypto:rsa_ssa_pcks1_go_pb",
+        "//src/proto/crypto:ecdsa_go_pb",
+        "//src/proto/crypto:common_go_pb",
+        "//src/proto/crypto:wrap_go_pb",
+        "//src/cert/templates:tpm",
+        "//src/utils",
+        "//src/transport/auth_service:session_token",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//status",
+        "@io_bazel_rules_go//go/tools/bazel",
+        "@in_gopkg_yaml_v3//:go_default_library",
+        "@org_golang_x_crypto//bcrypt:go_default_library",
+    ],
+)
+
+go_library(
+    name = "certloader",
+    importpath = "github.com/lowRISC/ot-provisioning/src/spm/services/certloader",
+    srcs = ["certloader.go"],
+    deps = [
+        "//src/cert:signer",
+        "//src/cert/templates:tpm",
+        "//src/proto/crypto:common_go_pb",
+        "//src/utils",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//status",
+        "@io_bazel_rules_go//go/tools/bazel",
+    ]
+)
+
+go_library(
+    name = "se",
+    importpath = "github.com/lowRISC/ot-provisioning/src/spm/services/se",
+    srcs = [
+      "se.go",
+      "se_pk11.go",
+    ],
+    deps = [
+        "//src/pk11",
+        "//src/cert:signer",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//status",
+    ],
+)
+
+go_test(
+    name = "se_pk11_test",
+    srcs = ["se_pk11_test.go"],
+    embed = [":se"],
+    deps = [
+        ":certloader",
+        "//src/pk11",
+        "//src/pk11:test_support",
+        "//src/cert:signer",
+        "//src/cert/templates:tpm",
+        "@com_github_google_go_cmp//cmp",
+        "@com_github_google_tink_go//kwp/subtle:go_default_library",
+        "@org_golang_x_crypto//hkdf",
+    ],
+)

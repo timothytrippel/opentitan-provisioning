@@ -1,0 +1,25 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+// Proxy/buffer service definition.
+syntax = "proto3";
+
+option go_package = "cert_go_bp";
+package crypto.cert;
+
+// Certificate configuration parameters.
+message CertParams {
+  // Certificate signing key Secure Provisioning Module (SPM) handle. Required.
+  // The signing key is expected to be provisioned in the SPM.
+  bytes key_handle = 1;
+
+  // Certificate serial number. Optional.
+  bytes serial_number = 2;
+
+  // Certificate not before timestamp in UNIX epoch time format. Optional.
+  int64 not_before_timestamp_usec = 3;
+
+  // Certificate not after timestamp in UNIX epoch time format. Optional.
+  int64 not_after_timestamp_usec = 4;
+}

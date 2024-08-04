@@ -1,0 +1,70 @@
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+load("@io_bazel_rules_docker//container:container.bzl", "container_bundle")
+load("@lowrisc_bazel_release//release:release.bzl", "release")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+
+container_bundle(
+    name = "provisioning_appliance_containers",
+    images = {
+        "podman_pause:latest": "@container_k8s_pause//image",
+        "pa_server:latest": "//src/pa:pa_server_image",
+        "spm_server:latest": "//src/spm:spm_server_image",
+    },
+)
+
+filegroup(
+    name = "provisioning_appliance_containers_tar",
+    srcs = [":provisioning_appliance_containers"],
+    output_group = "tar",
+)
+
+container_bundle(
+    name = "proxybuffer_containers",
+    images = {
+        "pb_server:latest": "//src/proxy_buffer:pb_server_image",
+        "pb_nginx:latest": "@container_nginx//image",
+        "pb_etcd:latest": "@container_etcd//image",
+    }
+)
+
+pkg_tar(
+    name = "provisioning_appliance_binaries",
+    srcs = [
+        ":provisioning_appliance_containers_tar",
+        "//src/pa:loadtest",
+        "//src/pa:pa_server",
+        "//src/spm:spm_server",
+        "//src/spm:spmutil",
+    ],
+    extension = "tar.xz",
+)
+
+pkg_tar(
+    name = "deploy_dev",
+    srcs = [
+        "//config/dev:deploy_config",
+    ],
+    strip_prefix = "/config/dev",
+    extension = "tar.xz",
+)
+
+pkg_tar(
+    name = "softhsm_dev",
+    srcs = [
+        "@softhsm2//:softhsm2"
+    ],
+    extension = "tar.xz",
+)
+
+release(
+    name = "release",
+    artifacts = {
+        ":deploy_dev": "Development deployment scripts",
+        ":provisioning_appliance_binaries": "Provisioning Appliance binaries",
+        ":softhsm_dev": "SoftHSM2 development binaries",
+        "//src/ate:windows": "ATE Win32 binaries",
+    },
+)

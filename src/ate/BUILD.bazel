@@ -1,0 +1,89 @@
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+load("@crt//rules:pkg_win.bzl", "pkg_win")
+
+package(default_visibility = ["//visibility:public"])
+
+WINDOWS_LIBS = [
+    "-lbcrypt",  # aka: bcrypt.lib
+    "-ldbghelp",  # aka: dbghelp.lib
+    "-lws2_32",  # aka: ws2_32.lib
+    "-lstdc++",  # Standard C++ library
+]
+
+cc_library(
+    name = "ate_client",
+    srcs = ["ate_client.cc"],
+    hdrs = ["ate_client.h"],
+    defines = ["BAZEL_BUILD"],
+    linkopts = select({
+        "//:windows": WINDOWS_LIBS,
+        "//conditions:default": [],
+    }),
+    deps = [
+        "//src/pa/proto:pa_cc_grpc",
+        "//src/transport:service_credentials",
+        "@com_github_grpc_grpc//:grpc++",
+        "@com_google_absl//absl/log:log",
+        "@com_google_absl//absl/memory",
+    ],
+)
+
+cc_test(
+    name = "ate_client_test",
+    srcs = ["ate_client_test.cc"],
+    deps = [
+        ":ate_client",
+        "//src/testing:test_helpers",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_binary(
+    name = "ate",
+    srcs = [
+        "ate_api.h",
+        "ate_dll.cc",
+    ],
+    linkopts = select({
+        "//:windows": WINDOWS_LIBS,
+        "//conditions:default": [],
+    }),
+    linkshared = True,
+    target_compatible_with = [
+        "@platforms//os:windows",
+    ],
+    deps = [
+        ":ate_client",
+        "//src/pa/proto:pa_cc_grpc",
+        "@com_google_absl//absl/log:log",
+        "@com_google_absl//absl/status:status",
+        "@com_google_absl//absl/status:statusor",
+    ],
+)
+
+cc_binary(
+    name = "ate_main",
+    srcs = ["ate_main.cc"],
+    defines = ["BAZEL_BUILD"],
+    deps = [
+        ":ate_client",
+        "//src/version:version",
+        "@com_google_absl//absl/log:log",
+        "@com_google_absl//absl/status:status",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/flags:flag",
+        "@com_google_absl//absl/flags:parse",
+    ],
+)
+
+pkg_win(
+    name = "windows",
+    srcs = [
+        ":ate",
+        ":ate_main",
+    ],
+    platform = "@crt//platforms/x86_32:win32",
+)

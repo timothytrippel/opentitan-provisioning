@@ -1,0 +1,42 @@
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+package(default_visibility = ["//visibility:public"])
+
+go_library(
+    name = "pa",
+    importpath = "github.com/lowRISC/ot-provisioning/src/pa/services/pa",
+    srcs = ["pa.go"],
+    deps = [
+        "//src/pa/proto:pa_go_pb",
+        "//src/spm/proto:spm_go_pb",
+        "//src/registry_buffer/proto:registry_buffer_go_pb",
+        "//src/proto:device_id_go_pb",
+        "//src/transport/auth_service", 
+        "//src/utils",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//status",
+        "@org_golang_google_protobuf//encoding/protojson",
+        "@org_golang_google_grpc//:go_default_library",
+    ],
+)
+
+go_test(
+    name = "pa_test",
+    srcs = ["pa_test.go"],
+    deps = [
+        ":pa",
+        "//src/pa/proto:pa_go_pb",
+        "//src/spm/proto:spm_go_pb",
+        "//src/registry_buffer/proto:registry_buffer_go_pb",
+        "@com_github_google_go_cmp//cmp",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//status",
+        "@org_golang_google_grpc//test/bufconn",
+        "@org_golang_google_protobuf//testing/protocmp",
+    ],
+)

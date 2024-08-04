@@ -1,0 +1,43 @@
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+# OT Provisioning Protobuf Definitions
+
+load("@rules_proto//proto:defs.bzl", "proto_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
+
+package(default_visibility = ["//visibility:public"])
+
+proto_library(
+    name = "device_id_proto",
+    srcs = ["device_id.proto"],
+)
+
+go_proto_library(
+    name = "device_id_go_pb",
+    importpath = "github.com/lowRISC/ot-provisioning/src/proto/device_id_go_pb",
+    proto = ":device_id_proto",
+)
+
+go_library(
+    name = "validators",
+    srcs = ["validators.go"],
+    importpath = "github.com/lowRISC/ot-provisioning/src/proto/validators",
+    deps = [":device_id_go_pb"],
+)
+
+go_library(
+    name = "device_testdata",
+    testonly = True,
+    srcs = ["device_testdata.go"],
+    importpath = "github.com/lowRISC/ot-provisioning/src/proto/device_testdata",
+    deps = [":device_id_go_pb"],
+)
+
+go_test(
+    name = "validators_test",
+    srcs = ["validators_test.go"],
+    embed = [":validators"],
+)

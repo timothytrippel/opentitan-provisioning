@@ -1,0 +1,55 @@
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+name: CI
+on: [push, pull_request]
+
+jobs:
+  lint:
+    # https://github.com/actions/runner-images/blob/main/images/linux/Ubuntu2204-Readme.md
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Run license-checker
+        run: bazel run //:licence-check
+      - name: Run gofmt
+        run: bazel run //:check_gofmt
+      - name: Run clang-format
+        run: bazel run //:check_clang_format
+
+  test:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 80
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build everything
+        run: |
+          bazel build //...
+          bazel run //release:release -- \
+              --norelease \
+              --copy "${PWD}/artifacts" \
+              "no_tag_not_a_release"
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifacts
+          path: artifacts/*
+      - name: Test everything
+        run: bazel test //...
+
+  airgapped_build_test:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 80
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build everything in an airgapped network namespace.
+        run: |
+          ./util/airgapped_builds/test-airgapped-build.sh

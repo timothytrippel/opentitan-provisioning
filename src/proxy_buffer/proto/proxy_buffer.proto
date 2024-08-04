@@ -1,0 +1,33 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+// Proxy/buffer service definition.
+
+syntax = "proto3";
+
+option go_package = "proxy_buffer_go_bp";
+package proxy_buffer;
+
+import "src/proto/device_id.proto";
+
+
+service ProxyBufferService {
+  // Registers a device.
+  rpc RegisterDevice(DeviceRegistrationRequest) returns (DeviceRegistrationResponse) {}
+}
+
+enum DeviceRegistrationStatus {
+  DEVICE_REGISTRATION_SUCCESS = 0;
+  // Failures.
+  DEVICE_REGISTRATION_BAD_REQUEST = 1;
+  DEVICE_REGISTRATION_BUFFER_FULL = 2;
+  // TODO: Other error cases?
+}
+message DeviceRegistrationRequest {
+  device_id.DeviceRecord device_record = 1;
+}
+message DeviceRegistrationResponse {
+  DeviceRegistrationStatus status = 1;
+  device_id.DeviceId device_id = 2;
+}

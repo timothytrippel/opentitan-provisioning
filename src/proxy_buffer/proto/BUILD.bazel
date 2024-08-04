@@ -1,0 +1,48 @@
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+#
+# OpenTitan provisioning proxy/buffer server/client -- protobuf messages / validators
+# ===================================================================================
+
+load("@rules_proto//proto:defs.bzl", "proto_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
+
+package(default_visibility = ["//visibility:public"])
+
+proto_library(
+    name = "proxy_buffer_proto",
+    srcs = ["proxy_buffer.proto"],
+    deps = ["//src/proto:device_id_proto"],
+)
+
+go_proto_library(
+    name = "proxy_buffer_go_pb",
+    compilers = ["@io_bazel_rules_go//proto:go_grpc"],
+    importpath = "github.com/lowRISC/ot-provisioning/src/proxy_buffer/proto/proxy_buffer_go_pb",
+    proto = ":proxy_buffer_proto",
+    deps = [
+        "//src/proto:device_id_go_pb",
+    ],
+)
+
+go_library(
+    name = "validators",
+    srcs = ["validators.go"],
+    importpath = "github.com/lowRISC/ot-provisioning/src/proxy_buffer/proto/validators",
+    deps = [
+        ":proxy_buffer_go_pb",
+        "//src/proto:validators",
+    ],
+)
+
+go_test(
+    name = "validators_test",
+    srcs = ["validators_test.go"],
+    embed = [":validators"],
+    deps = [
+        "//src/proto:validators",
+        "//src/proto:device_id_go_pb",
+    ],
+)

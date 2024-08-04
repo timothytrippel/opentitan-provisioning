@@ -1,0 +1,20 @@
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_binary", "go_test")
+
+package(default_visibility = ["//visibility:public"])
+
+go_library(
+    name = "utils",
+    importpath = "github.com/lowRISC/ot-provisioning/src/utils",
+    srcs = ["utils.go"],
+    deps = [
+        "//src/version:buildver",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//status",
+        "@in_gopkg_yaml_v3//:go_default_library",
+        "@org_golang_x_crypto//bcrypt:go_default_library",
+    ],
+)

@@ -1,0 +1,35 @@
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+name: Create Release
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        required: true
+        type: string
+
+jobs:
+  release:
+    # https://github.com/actions/runner-images/blob/main/images/linux/Ubuntu2204-Readme.md
+    runs-on: ubuntu-22.04
+    timeout-minutes: 80
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y $(find . -name apt-requirements.txt | xargs sed -e "s/#.*//g")
+      - name: Build
+        run: |
+          bazel build //release:release
+      - name: Test
+        run: |
+          bazel test //...
+      - name: Publish Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          bazel run //release:release -- ${{ inputs.release_tag }}

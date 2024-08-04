@@ -1,0 +1,15 @@
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+package(default_visibility = ["//visibility:public"])
+
+cc_library(
+    name = "test_helpers",
+    hdrs = ["test_helpers.h"],
+    deps = [
+        "@com_github_protobuf_matchers//protobuf-matchers:protobuf-matchers",
+        "@com_google_googletest//:gtest",
+    ],
+    testonly = True,
+)

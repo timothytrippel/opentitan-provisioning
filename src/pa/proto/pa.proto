@@ -1,0 +1,88 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+// Provisioning Appliance service definition.
+syntax = "proto3";
+
+option go_package = "pa_go_pb";
+package pa;
+
+import "src/proto/crypto/wrap.proto";
+import "src/proto/device_id.proto";
+
+// The ProvisioningApplianceService is a bridge service to a trusted SPM server.
+service ProvisioningApplianceService {
+  rpc InitSession(InitSessionRequest)
+    returns (InitSessionResponse) {}
+  rpc CloseSession(CloseSessionRequest)
+    returns (CloseSessionResponse) {}
+  rpc CreateKeyAndCert(CreateKeyAndCertRequest)
+      returns (CreateKeyAndCertResponse) {}
+  rpc SendDeviceRegistrationPayload(RegistrationRequest)
+      returns (RegistrationResponse) {}
+}
+
+// Create key and endorsement certificates request.
+// The `sku` fields is used as an unique key to
+// implement the specific key gen and endorsement certificate flow for a
+// class of Devices.
+message CreateKeyAndCertRequest {
+  // SKU identifier. Required.
+  string sku = 1;
+  // Device identifier. Required.
+  device_id.DeviceId device_id = 2;
+  // Serial Number per sku. Optional.
+  bytes serial_number = 3;
+}
+
+// Endorsed key bundle.
+message EndorsedKey {
+  // Certificate endorsing the public portion of the private key encapsulated
+  // inside `wrapped_key`. This field is not set if `wrapped_key` encapsulates
+  // a symmetric key.
+  device_id.Certificate cert = 1;
+  // Wrapped key object.
+  crypto.wrap.WrappedKey wrapped_key = 2;
+}
+
+// Create key and endorsement certificates reponse.
+message CreateKeyAndCertResponse {
+  // List of keys.
+  repeated EndorsedKey keys = 1;
+}
+
+// Initialize SKU session request.
+message InitSessionRequest {
+  // SKU identifier. Required.
+  string sku = 1;
+  // SKU authentication token used to authenticate the client. This will be
+  // moved to the authentication layer in the future. Required.
+  string sku_auth = 2;
+}
+
+// Initialize SKU session response.
+message InitSessionResponse {
+  // SKU session token. Used to identify the client session. This will be moved
+  // to the authentication layer in the future.
+  string sku_session_token = 1;
+  // PA endpoint. The client should select connections to this client to issue
+  // any provisioning calls (e.g. CreateKeyAndCertRequest).
+  string pa_endpoint = 2;
+  // list of authenticate methods
+  repeated string auth_methods = 3;
+}
+
+// Close SKU session request.
+message CloseSessionRequest {}
+// Close SKU session response.
+message CloseSessionResponse {}
+
+// Device Registration request.
+message RegistrationRequest {
+  // Device record. Required.
+  device_id.DeviceRecord device_record = 1;
+}
+
+// Device Registration reponse.
+message RegistrationResponse {}

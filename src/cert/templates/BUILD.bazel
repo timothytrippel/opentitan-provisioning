@@ -1,0 +1,36 @@
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "testdata",
+    srcs = glob([
+        "testdata/*",
+    ]),
+)
+
+go_library(
+    name = "tpm",
+    importpath = "github.com/lowRISC/ot-provisioning/src/cert/templates/tpm",
+    srcs = ["tpm.go"],
+    deps = [
+        "//src/cert:signer",
+    ]
+)
+
+go_test(
+    name = "tpm_test",
+    srcs = ["tpm_test.go"],
+    data = [":testdata"],
+    deps = [
+        ":tpm",
+        "//src/cert:signer",
+        "//src/spm/services:certloader",
+        "//src/utils",
+        "@io_bazel_rules_go//go/tools/bazel",
+    ]
+)

@@ -1,0 +1,27 @@
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+# List of packages installed with apt on our reference Ubuntu platform.
+# Keep it sorted.
+autoconf
+bison
+build-essential
+ca-certificates
+clang-format
+cmake
+curl
+doxygen
+flex
+g++
+git
+gnupg
+golang
+libssl-dev
+lsb-release
+make
+podman
+python3
+python3-pip
+python3-setuptools
+python3-wheel

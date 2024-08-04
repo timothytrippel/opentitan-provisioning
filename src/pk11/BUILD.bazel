@@ -1,0 +1,107 @@
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
+
+package(default_visibility = ["//visibility:public"])
+
+go_library(
+    name = "pk11",
+    srcs = [
+        "pk11.go",
+        "aes.go",
+        "dump.go",
+        "ecdsa.go",
+        "kdf.go",
+        "object.go",
+        "rsa.go",
+    ],
+    importpath = "github.com/lowRISC/ot-provisioning/src/pk11",
+    deps = [
+        ":native",
+        "@com_github_miekg_pkcs11//:go_default_library",
+    ],
+)
+
+go_library(
+    name = "native",
+    srcs = ["native.go"],
+    importpath = "github.com/lowRISC/ot-provisioning/src/pk11/native",
+    cgo = True,
+    visibility = ["//visibility:private"],
+    deps = [
+      "@com_github_miekg_pkcs11//:go_default_library",
+    ],
+)
+
+
+go_library(
+    name = "test_support",
+    srcs = ["test_support.go"],
+    importpath = "github.com/lowRISC/ot-provisioning/src/pk11/test_support",
+    testonly = True,
+    data = ["@softhsm2//:softhsm2"],
+    deps = [
+        ":pk11",
+        "//third_party/softhsm2:test_config",
+        "@io_bazel_rules_go//go/tools/bazel",
+    ],
+)
+
+go_test(
+    name = "pk11_test",
+    srcs = ["pk11_test.go"],
+    deps = [
+        ":pk11",
+        ":test_support",
+    ],
+)
+
+go_test(
+    name = "aes_test",
+    srcs = ["aes_test.go"],
+    deps = [
+        ":pk11",
+        ":test_support",
+    ],
+)
+
+go_test(
+    name = "hkdf_test",
+    srcs = ["hkdf_test.go"],
+    deps = [
+        ":pk11",
+        ":test_support",
+        "@org_golang_x_crypto//hkdf",
+    ],
+)
+
+go_test(
+    name = "kwp_test",
+    srcs = ["kwp_test.go"],
+    deps = [
+        ":pk11",
+        ":test_support",
+        "@com_github_google_tink_go//kwp/subtle:go_default_library",
+        "@com_github_google_go_cmp//cmp",
+    ],
+)
+
+go_test(
+    name = "ecdsa_test",
+    srcs = ["ecdsa_test.go"],
+    deps = [
+        ":pk11",
+        ":test_support",
+    ],
+)
+
+go_test(
+    name = "rsa_test",
+    srcs = ["rsa_test.go"],
+    deps = [
+        ":pk11",
+        ":test_support",
+    ],
+)

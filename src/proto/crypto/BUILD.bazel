@@ -1,0 +1,85 @@
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+# OT Provisioning Protobuf Definitions for Cryptographic Primitives
+
+load("@rules_proto//proto:defs.bzl", "proto_library")
+load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
+
+package(default_visibility = ["//visibility:public"])
+
+proto_library(
+    name = "cert_proto",
+    srcs = ["cert.proto"],
+)
+
+go_proto_library(
+    name = "cert_go_pb",
+    importpath = "github.com/lowRISC/ot-provisioning/src/proto/crypto/cert_go_pb",
+    proto = ":cert_proto",
+)
+
+proto_library(
+    name = "common_proto",
+    srcs = ["common.proto"],
+)
+
+go_proto_library(
+    name = "common_go_pb",
+    importpath = "github.com/lowRISC/ot-provisioning/src/proto/crypto/common_go_pb",
+    proto = ":common_proto",
+)
+
+proto_library(
+    name = "ecdsa_proto",
+    srcs = ["ecdsa.proto"],
+    deps = [
+        ":common_proto",
+    ],
+)
+
+go_proto_library(
+    name = "ecdsa_go_pb",
+    importpath = "github.com/lowRISC/ot-provisioning/src/proto/crypto/ecdsa_go_pb",
+    proto = ":ecdsa_proto",
+    deps = [
+        ":common_go_pb"
+    ],
+)
+
+proto_library(
+    name = "rsa_ssa_pcks1_proto",
+    srcs = ["rsa_ssa_pcks1.proto"],
+    deps = [
+        ":common_proto",
+    ],
+)
+
+go_proto_library(
+    name = "rsa_ssa_pcks1_go_pb",
+    importpath = "github.com/lowRISC/ot-provisioning/src/proto/crypto/rsa_ssa_pcks1_go_pb",
+    proto = ":rsa_ssa_pcks1_proto",
+    deps = [
+        ":common_go_pb"
+    ],
+)
+
+proto_library(
+    name = "wrap_proto",
+    srcs = ["wrap.proto"],
+    deps = [
+        ":ecdsa_proto",
+        ":rsa_ssa_pcks1_proto",
+    ],
+)
+
+go_proto_library(
+    name = "wrap_go_pb",
+    importpath = "github.com/lowRISC/ot-provisioning/src/proto/crypto/wrap_go_pb",
+    proto = ":wrap_proto",
+    deps = [
+        ":ecdsa_go_pb",
+        ":rsa_ssa_pcks1_go_pb",
+    ],
+)

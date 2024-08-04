@@ -1,0 +1,70 @@
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+package(default_visibility = ["//visibility:public"])
+
+go_library(
+    name = "connector",
+    importpath = "github.com/lowRISC/ot-provisioning/src/proxy_buffer/store/connector",
+    srcs = ["connector.go"],
+    deps = [
+    ],
+)
+
+go_library(
+    name = "db",
+    importpath = "github.com/lowRISC/ot-provisioning/src/proxy_buffer/store/db",
+    srcs = ["db.go"],
+    deps = [
+        ":connector",
+        "//src/proto:device_id_go_pb",
+        "@com_github_golang_protobuf//proto:go_default_library",
+    ],
+)
+
+go_library(
+    name = "db_fake",
+    importpath = "github.com/lowRISC/ot-provisioning/src/proxy_buffer/store/db_fake",
+    srcs = ["db_fake.go"],
+    deps = [
+        ":connector",
+    ],
+)
+
+go_test(
+    name = "db_test",
+    srcs = ["db_test.go"],
+    deps = [
+        ":db",
+        ":db_fake",
+        "//src/proto:device_id_go_pb",
+        "@com_github_google_go_cmp//cmp",
+        "@org_golang_google_protobuf//testing/protocmp",
+    ],
+)
+
+go_library(
+    name = "etcd",
+    importpath = "github.com/lowRISC/ot-provisioning/src/proxy_buffer/store/etcd",
+    srcs = ["etcd.go"],
+    deps = [
+        ":connector",
+        "@io_etcd_go_etcd_client_v3//:go_default_library",
+    ],
+)
+
+go_test(
+    name = "etcd_test",
+    srcs = ["etcd_test.go"],
+    deps = [
+        ":etcd",
+        "//src/proto:device_id_go_pb",
+        "@io_etcd_go_etcd_api_v3//mvccpb:go_default_library",
+        "@io_etcd_go_etcd_client_v3//:go_default_library",
+        "@com_github_google_go_cmp//cmp",
+        "@org_golang_google_protobuf//testing/protocmp",
+    ],
+)

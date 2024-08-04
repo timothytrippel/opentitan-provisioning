@@ -1,0 +1,33 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+// Secure Provisioning Module service definitions.
+syntax = "proto3";
+
+option go_package = "spm_go_bp";
+package spm;
+
+import "src/pa/proto/pa.proto";
+
+// The SpmService provides various cryptographic services to
+// generate, harvest, and/or certify Device Under Test secrets.
+service SpmService {
+  // InitSession configures the SPM to handle provisioning commands for a
+  // given SKU.
+  rpc InitSession(pa.InitSessionRequest)
+    returns (pa.InitSessionResponse) {}
+
+  // CreateKeyAndCert generates a set of wrapped keys for a given Device. The
+  // number of keys, key types and endorsement certificates depend on the
+  // provided `product_identifier` and `sku`.
+  //
+  // All keys are wrapped with a symmetric key which has been pre-shared with
+  // the Device Under Test.
+  //
+  // All issued certificates are signed with a Silicon Creator Intermediate CA
+  // private key which can be verified against a Silicon Creator CA root
+  // certificate.
+  rpc CreateKeyAndCert(pa.CreateKeyAndCertRequest)
+      returns (pa.CreateKeyAndCertResponse) {}
+}
