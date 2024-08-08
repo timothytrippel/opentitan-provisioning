@@ -6,7 +6,7 @@ load("@bazel_gazelle//:def.bzl", "gazelle")
 load("@io_bazel_rules_docker//container:container.bzl", "container_image")
 load("@io_bazel_rules_go//go:def.bzl", "nogo")
 load("@lowrisc_misc_linters//rules:rules.bzl", "licence_check")
-load("//rules:quality.bzl", "gofmt", "clang_format_check")
+load("//rules:quality.bzl", "clang_format_check", "gofmt")
 
 config_setting(
     name = "windows",
@@ -23,11 +23,6 @@ nogo(
 
 licence_check(
     name = "licence-check",
-    licence = '''
-    Copyright lowRISC contributors.
-    Licensed under the Apache License, Version 2.0, see LICENSE for details.
-    SPDX-License-Identifier: Apache-2.0
-    ''',
     exclude_patterns = [
         # Uncommented formats.
         "*.md",
@@ -55,6 +50,11 @@ licence_check(
         "CLA",
         "LICENSE",
     ],
+    licence = """
+    Copyright lowRISC contributors (OpenTitan project).
+    Licensed under the Apache License, Version 2.0, see LICENSE for details.
+    SPDX-License-Identifier: Apache-2.0
+    """,
 )
 
 gofmt(
@@ -92,17 +92,17 @@ clang_format_check(
 # after this rule.
 gazelle(
     name = "update-go-repos",
-    command = "update-repos",
     args = [
         "-from_file=go.mod",
         "-to_macro=third_party/go/deps.bzl%go_packages_",
         "--build_file_proto_mode=disable_global",
     ],
+    command = "update-repos",
 )
 
 container_image(
     name = "base_image",
     base = "@ubuntu2204//image",
+    files = ["@softhsm2"],
     visibility = ["//visibility:public"],
-    files = ["@softhsm2//:softhsm2"],
 )
