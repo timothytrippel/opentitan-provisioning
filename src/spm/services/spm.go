@@ -21,7 +21,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	ms_client "github.com/lowRISC/ot-provisioning/src/message_client"
 	"github.com/lowRISC/ot-provisioning/src/pk11"
 	"github.com/lowRISC/ot-provisioning/src/spm/services/certloader"
 	"github.com/lowRISC/ot-provisioning/src/spm/services/se"
@@ -90,8 +89,6 @@ type server struct {
 
 	// muSKU is a mutex use to arbitrate SKU initialization access.
 	muSKU sync.RWMutex
-
-	msClient *ms_client.Client
 }
 
 type SkuAuthConfig struct {
@@ -157,14 +154,6 @@ func NewSpmServer(opts Options) (pbs.SpmServiceServer, error) {
 	}
 
 	session_token.NewSessionTokenInstance()
-	var client *ms_client.Client
-
-	if opts.MSConfigFile != "" {
-		client, err = ms_client.NewClient(opts.MSConfigFile, "spm")
-		if err != nil {
-			log.Printf("could not create message service client: %v", err)
-		}
-	}
 
 	return &server{
 		loader:          certloader.New(),
@@ -176,19 +165,12 @@ func NewSpmServer(opts Options) (pbs.SpmServiceServer, error) {
 		authCfg: &AuthConfig{
 			SkuAuthCfgList: config.SkuAuthCfgList,
 		},
-		msClient: client,
 	}, nil
 }
 
 func (s *server) initSku(sku string) (string, error) {
 	token, err := generateSessionToken(TokenSize)
 	if err != nil {
-		if s.msClient != nil {
-			err = s.msClient.SendMessage(ms_client.MsgTypeAlert, "Alert: failed to generate session token", err.Error())
-			if err != nil {
-				log.Printf("failed to send message: %v", err)
-			}
-		}
 
 		log.Printf("failed to generate session token: %v", err)
 		return "", status.Errorf(codes.NotFound, "failed to generate session token: %v", err)
@@ -198,12 +180,6 @@ func (s *server) initSku(sku string) (string, error) {
 		log.Printf("SPM.InitSession Response - TPM Token")
 		err = s.initializeSKU(sku)
 		if err != nil {
-			if s.msClient != nil {
-				err = s.msClient.SendMessage(ms_client.MsgTypeAlert, "Alert: failed to initialize sku", err.Error())
-				if err != nil {
-					log.Printf("failed to send message: %v", err)
-				}
-			}
 			log.Printf("failed to initialize sku: %v", err)
 			return "", status.Errorf(codes.Internal, "failed to initialize sku")
 		}
@@ -238,12 +214,6 @@ func (s *server) InitSession(ctx context.Context, request *pbp.InitSessionReques
 	var found bool
 	if s.authCfg != nil {
 		if skuAuthConfig, found = s.findSkuAuth(request.Sku); !found {
-			if s.msClient != nil {
-				err := s.msClient.SendMessage(ms_client.MsgTypeAlert, "Alert: unknown sku "+request.Sku, "sku "+request.Sku+" not found")
-				if err != nil {
-					log.Printf("failed to send message: %v", err)
-				}
-			}
 			return nil, status.Errorf(codes.Internal, "unknown sku: %q", request.Sku)
 		}
 		err := utils.CompareHashAndPassword(skuAuthConfig.SkuAuth, request.SkuAuth)
