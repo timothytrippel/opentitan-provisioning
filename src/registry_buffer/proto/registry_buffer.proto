@@ -1,0 +1,18 @@
+// Copyright lowRISC contributors (OpenTitan project).
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+// Registry/buffer service definition.
+
+syntax = "proto3";
+
+option go_package = "registry_buffer_go_bp";
+package registry_buffer;
+
+import "src/pa/proto/pa.proto";
+
+// RegisterDevice registers a new device record.
+service RegistryBufferService {
+  // Registers a device.
+  rpc RegisterDevice(pa.RegistrationRequest) returns (pa.RegistrationResponse) {}
+}
