@@ -12,7 +12,7 @@ import (
 	mvccpb "go.etcd.io/etcd/api/v3/mvccpb"
 	clientv3 "go.etcd.io/etcd/client/v3"
 
-	"github.com/lowRISC/ot-provisioning/src/proxy_buffer/store/etcd"
+	"github.com/lowRISC/opentitan-provisioning/src/proxy_buffer/store/etcd"
 )
 
 // mockTxn implements the clientv3.Txn interface for testing purposes.

@@ -17,10 +17,10 @@ import (
 	"google.golang.org/grpc/test/bufconn"
 	"google.golang.org/protobuf/testing/protocmp"
 
-	pbp "github.com/lowRISC/ot-provisioning/src/pa/proto/pa_go_pb"
-	"github.com/lowRISC/ot-provisioning/src/pa/services/pa"
-	pbr "github.com/lowRISC/ot-provisioning/src/registry_buffer/proto/registry_buffer_go_pb"
-	pbs "github.com/lowRISC/ot-provisioning/src/spm/proto/spm_go_pb"
+	pbp "github.com/lowRISC/opentitan-provisioning/src/pa/proto/pa_go_pb"
+	"github.com/lowRISC/opentitan-provisioning/src/pa/services/pa"
+	pbr "github.com/lowRISC/opentitan-provisioning/src/registry_buffer/proto/registry_buffer_go_pb"
+	pbs "github.com/lowRISC/opentitan-provisioning/src/spm/proto/spm_go_pb"
 )
 
 const (

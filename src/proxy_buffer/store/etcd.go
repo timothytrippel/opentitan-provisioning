@@ -11,7 +11,7 @@ import (
 
 	clientv3 "go.etcd.io/etcd/client/v3"
 
-	"github.com/lowRISC/ot-provisioning/src/proxy_buffer/store/connector"
+	"github.com/lowRISC/opentitan-provisioning/src/proxy_buffer/store/connector"
 )
 
 // etcdDB implements a `connector.Connector` database interface.

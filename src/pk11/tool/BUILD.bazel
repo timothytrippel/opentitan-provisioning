@@ -8,13 +8,13 @@ package(default_visibility = ["//visibility:public"])
 
 go_library(
     name = "lex",
-    importpath = "github.com/lowRISC/ot-provisioning/src/pk11/tool/lex",
+    importpath = "github.com/lowRISC/opentitan-provisioning/src/pk11/tool/lex",
     srcs = ["lex.go"],
 )
 
 go_library(
     name = "commands",
-    importpath = "github.com/lowRISC/ot-provisioning/src/pk11/tool/commands",
+    importpath = "github.com/lowRISC/opentitan-provisioning/src/pk11/tool/commands",
     srcs = [
         "commands.go",
         "commands_basic.go",

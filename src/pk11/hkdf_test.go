@@ -12,8 +12,8 @@ import (
 
 	"golang.org/x/crypto/hkdf"
 
-	"github.com/lowRISC/ot-provisioning/src/pk11"
-	ts "github.com/lowRISC/ot-provisioning/src/pk11/test_support"
+	"github.com/lowRISC/opentitan-provisioning/src/pk11"
+	ts "github.com/lowRISC/opentitan-provisioning/src/pk11/test_support"
 )
 
 func TestHKDFNoSalt(t *testing.T) {

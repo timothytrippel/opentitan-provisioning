@@ -13,10 +13,10 @@ import (
 
 	"google.golang.org/grpc"
 
-	pbs "github.com/lowRISC/ot-provisioning/src/spm/proto/spm_go_pb"
-	"github.com/lowRISC/ot-provisioning/src/spm/services/spm"
-	"github.com/lowRISC/ot-provisioning/src/transport/grpconn"
-	"github.com/lowRISC/ot-provisioning/src/utils"
+	pbs "github.com/lowRISC/opentitan-provisioning/src/spm/proto/spm_go_pb"
+	"github.com/lowRISC/opentitan-provisioning/src/spm/services/spm"
+	"github.com/lowRISC/opentitan-provisioning/src/transport/grpconn"
+	"github.com/lowRISC/opentitan-provisioning/src/utils"
 )
 
 var (

@@ -4,7 +4,7 @@
 
 package commands
 
-import "github.com/lowRISC/ot-provisioning/src/pk11"
+import "github.com/lowRISC/opentitan-provisioning/src/pk11"
 
 // ecdsaCommands loads ECDSA-specific commands.
 func (s *State) aesCommands() {

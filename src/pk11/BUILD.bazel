@@ -17,7 +17,7 @@ go_library(
         "object.go",
         "rsa.go",
     ],
-    importpath = "github.com/lowRISC/ot-provisioning/src/pk11",
+    importpath = "github.com/lowRISC/opentitan-provisioning/src/pk11",
     deps = [
         ":native",
         "@com_github_miekg_pkcs11//:go_default_library",
@@ -27,7 +27,7 @@ go_library(
 go_library(
     name = "native",
     srcs = ["native.go"],
-    importpath = "github.com/lowRISC/ot-provisioning/src/pk11/native",
+    importpath = "github.com/lowRISC/opentitan-provisioning/src/pk11/native",
     cgo = True,
     visibility = ["//visibility:private"],
     deps = [
@@ -39,7 +39,7 @@ go_library(
 go_library(
     name = "test_support",
     srcs = ["test_support.go"],
-    importpath = "github.com/lowRISC/ot-provisioning/src/pk11/test_support",
+    importpath = "github.com/lowRISC/opentitan-provisioning/src/pk11/test_support",
     testonly = True,
     data = ["@softhsm2//:softhsm2"],
     deps = [

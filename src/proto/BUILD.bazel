@@ -17,14 +17,14 @@ proto_library(
 
 go_proto_library(
     name = "device_id_go_pb",
-    importpath = "github.com/lowRISC/ot-provisioning/src/proto/device_id_go_pb",
+    importpath = "github.com/lowRISC/opentitan-provisioning/src/proto/device_id_go_pb",
     proto = ":device_id_proto",
 )
 
 go_library(
     name = "validators",
     srcs = ["validators.go"],
-    importpath = "github.com/lowRISC/ot-provisioning/src/proto/validators",
+    importpath = "github.com/lowRISC/opentitan-provisioning/src/proto/validators",
     deps = [":device_id_go_pb"],
 )
 
@@ -32,7 +32,7 @@ go_library(
     name = "device_testdata",
     testonly = True,
     srcs = ["device_testdata.go"],
-    importpath = "github.com/lowRISC/ot-provisioning/src/proto/device_testdata",
+    importpath = "github.com/lowRISC/opentitan-provisioning/src/proto/device_testdata",
     deps = [":device_id_go_pb"],
 )
 

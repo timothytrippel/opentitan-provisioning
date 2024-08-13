@@ -16,8 +16,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 	kwp "github.com/google/tink/go/kwp/subtle"
 
-	"github.com/lowRISC/ot-provisioning/src/pk11"
-	ts "github.com/lowRISC/ot-provisioning/src/pk11/test_support"
+	"github.com/lowRISC/opentitan-provisioning/src/pk11"
+	ts "github.com/lowRISC/opentitan-provisioning/src/pk11/test_support"
 )
 
 func TestAESKWPWrapPrivate(t *testing.T) {

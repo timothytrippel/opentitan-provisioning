@@ -40,7 +40,7 @@ involved.
   implementation options. If you would like to make a large-scale change or
   discuss multiple implementation options, discuss on the mailing list.
 * Create pull requests from a fork rather than making new branches in
-  `github.com/lowRISC/ot-provisioning`.
+  `github.com/lowRISC/opentitan-provisioning`.
 * Do not force push.
 * Do not attempt to commit code with a non-Apache license without discussing
   first.

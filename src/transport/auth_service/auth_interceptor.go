@@ -11,7 +11,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/lowRISC/ot-provisioning/src/transport/grpconn"
+	"github.com/lowRISC/opentitan-provisioning/src/transport/grpconn"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"

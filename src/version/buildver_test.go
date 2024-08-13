@@ -10,7 +10,7 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/lowRISC/ot-provisioning/src/version/buildver"
+	"github.com/lowRISC/opentitan-provisioning/src/version/buildver"
 )
 
 func TestVersion(t *testing.T) {

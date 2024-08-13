@@ -15,9 +15,9 @@ import (
 
 	"github.com/bazelbuild/rules_go/go/tools/bazel"
 
-	"github.com/lowRISC/ot-provisioning/src/pk11/tool/commands"
-	"github.com/lowRISC/ot-provisioning/src/pk11/tool/lex"
-	"github.com/lowRISC/ot-provisioning/third_party/softhsm2/test_config"
+	"github.com/lowRISC/opentitan-provisioning/src/pk11/tool/commands"
+	"github.com/lowRISC/opentitan-provisioning/src/pk11/tool/lex"
+	"github.com/lowRISC/opentitan-provisioning/third_party/softhsm2/test_config"
 )
 
 const openscSO = "/usr/lib/x86_64-linux-gnu/pkcs11/opensc-pkcs11.so"

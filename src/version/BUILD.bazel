@@ -29,7 +29,7 @@ cc_test(
 go_library(
     name = "buildver",
     srcs = ["buildver.go"],
-    importpath = "github.com/lowRISC/ot-provisioning/src/version/buildver",
+    importpath = "github.com/lowRISC/opentitan-provisioning/src/version/buildver",
     x_defs = {
         "BuildHost": "{BUILD_HOST}",
         "BuildUser": "{BUILD_USER}",

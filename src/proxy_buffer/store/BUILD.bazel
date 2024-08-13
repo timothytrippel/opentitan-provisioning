@@ -8,7 +8,7 @@ package(default_visibility = ["//visibility:public"])
 
 go_library(
     name = "connector",
-    importpath = "github.com/lowRISC/ot-provisioning/src/proxy_buffer/store/connector",
+    importpath = "github.com/lowRISC/opentitan-provisioning/src/proxy_buffer/store/connector",
     srcs = ["connector.go"],
     deps = [
     ],
@@ -16,7 +16,7 @@ go_library(
 
 go_library(
     name = "db",
-    importpath = "github.com/lowRISC/ot-provisioning/src/proxy_buffer/store/db",
+    importpath = "github.com/lowRISC/opentitan-provisioning/src/proxy_buffer/store/db",
     srcs = ["db.go"],
     deps = [
         ":connector",
@@ -27,7 +27,7 @@ go_library(
 
 go_library(
     name = "db_fake",
-    importpath = "github.com/lowRISC/ot-provisioning/src/proxy_buffer/store/db_fake",
+    importpath = "github.com/lowRISC/opentitan-provisioning/src/proxy_buffer/store/db_fake",
     srcs = ["db_fake.go"],
     deps = [
         ":connector",
@@ -48,7 +48,7 @@ go_test(
 
 go_library(
     name = "etcd",
-    importpath = "github.com/lowRISC/ot-provisioning/src/proxy_buffer/store/etcd",
+    importpath = "github.com/lowRISC/opentitan-provisioning/src/proxy_buffer/store/etcd",
     srcs = ["etcd.go"],
     deps = [
         ":connector",

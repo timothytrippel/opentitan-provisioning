@@ -18,10 +18,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/lowRISC/ot-provisioning/src/cert/signer"
-	"github.com/lowRISC/ot-provisioning/src/pk11"
-	"github.com/lowRISC/ot-provisioning/src/spm/services/se"
-	"github.com/lowRISC/ot-provisioning/src/utils"
+	"github.com/lowRISC/opentitan-provisioning/src/cert/signer"
+	"github.com/lowRISC/opentitan-provisioning/src/pk11"
+	"github.com/lowRISC/opentitan-provisioning/src/spm/services/se"
+	"github.com/lowRISC/opentitan-provisioning/src/utils"
 )
 
 var (

@@ -14,10 +14,10 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	pbp "github.com/lowRISC/ot-provisioning/src/pa/proto/pa_go_pb"
-	pbr "github.com/lowRISC/ot-provisioning/src/registry_buffer/proto/registry_buffer_go_pb"
-	pbs "github.com/lowRISC/ot-provisioning/src/spm/proto/spm_go_pb"
-	"github.com/lowRISC/ot-provisioning/src/transport/auth_service"
+	pbp "github.com/lowRISC/opentitan-provisioning/src/pa/proto/pa_go_pb"
+	pbr "github.com/lowRISC/opentitan-provisioning/src/registry_buffer/proto/registry_buffer_go_pb"
+	pbs "github.com/lowRISC/opentitan-provisioning/src/spm/proto/spm_go_pb"
+	"github.com/lowRISC/opentitan-provisioning/src/transport/auth_service"
 )
 
 // server is the server object.

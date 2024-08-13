@@ -8,7 +8,7 @@ package(default_visibility = ["//visibility:public"])
 
 go_library(
     name = "utils",
-    importpath = "github.com/lowRISC/ot-provisioning/src/utils",
+    importpath = "github.com/lowRISC/opentitan-provisioning/src/utils",
     srcs = ["utils.go"],
     deps = [
         "//src/version:buildver",

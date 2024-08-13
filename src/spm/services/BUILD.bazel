@@ -9,7 +9,7 @@ package(default_visibility = ["//visibility:public"])
 go_library(
     name = "spm",
     srcs = ["spm.go"],
-    importpath = "github.com/lowRISC/ot-provisioning/src/spm/services/spm",
+    importpath = "github.com/lowRISC/opentitan-provisioning/src/spm/services/spm",
     deps = [
         ":certloader",
         ":se",
@@ -36,7 +36,7 @@ go_library(
 go_library(
     name = "certloader",
     srcs = ["certloader.go"],
-    importpath = "github.com/lowRISC/ot-provisioning/src/spm/services/certloader",
+    importpath = "github.com/lowRISC/opentitan-provisioning/src/spm/services/certloader",
     deps = [
         "//src/cert:signer",
         "//src/cert/templates:tpm",
@@ -54,7 +54,7 @@ go_library(
         "se.go",
         "se_pk11.go",
     ],
-    importpath = "github.com/lowRISC/ot-provisioning/src/spm/services/se",
+    importpath = "github.com/lowRISC/opentitan-provisioning/src/spm/services/se",
     deps = [
         "//src/cert:signer",
         "//src/pk11",

@@ -16,8 +16,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/lowRISC/ot-provisioning/src/cert/signer"
-	"github.com/lowRISC/ot-provisioning/src/pk11"
+	"github.com/lowRISC/opentitan-provisioning/src/cert/signer"
+	"github.com/lowRISC/opentitan-provisioning/src/pk11"
 )
 
 // sessionQueue implements a thread-safe HSM session queue. See `insert` and

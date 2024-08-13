@@ -16,10 +16,10 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/lowRISC/ot-provisioning/src/cert/signer"
-	"github.com/lowRISC/ot-provisioning/src/utils"
+	"github.com/lowRISC/opentitan-provisioning/src/cert/signer"
+	"github.com/lowRISC/opentitan-provisioning/src/utils"
 
-	pbcommon "github.com/lowRISC/ot-provisioning/src/proto/crypto/common_go_pb"
+	pbcommon "github.com/lowRISC/opentitan-provisioning/src/proto/crypto/common_go_pb"
 )
 
 var (

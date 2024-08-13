@@ -9,8 +9,8 @@ package validators
 import (
 	"fmt"
 
-	common_validators "github.com/lowRISC/ot-provisioning/src/proto/validators"
-	pb "github.com/lowRISC/ot-provisioning/src/proxy_buffer/proto/proxy_buffer_go_pb"
+	common_validators "github.com/lowRISC/opentitan-provisioning/src/proto/validators"
+	pb "github.com/lowRISC/opentitan-provisioning/src/proxy_buffer/proto/proxy_buffer_go_pb"
 )
 
 // ValidateDeviceRegistrationRequest performs invariant checks for a

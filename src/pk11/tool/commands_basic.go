@@ -11,7 +11,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/lowRISC/ot-provisioning/src/pk11/tool/lex"
+	"github.com/lowRISC/opentitan-provisioning/src/pk11/tool/lex"
 )
 
 // basicCommands loads the basic, non-PKCS#11-specific commands into an interpreter.

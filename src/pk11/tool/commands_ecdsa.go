@@ -12,7 +12,7 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/lowRISC/ot-provisioning/src/pk11"
+	"github.com/lowRISC/opentitan-provisioning/src/pk11"
 )
 
 // namedCurve tries to parse name into an elliptic.Curve value.

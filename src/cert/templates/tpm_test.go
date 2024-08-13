@@ -16,10 +16,10 @@ import (
 
 	"github.com/bazelbuild/rules_go/go/tools/bazel"
 
-	"github.com/lowRISC/ot-provisioning/src/cert/signer"
-	"github.com/lowRISC/ot-provisioning/src/cert/templates/tpm"
-	"github.com/lowRISC/ot-provisioning/src/spm/services/certloader"
-	"github.com/lowRISC/ot-provisioning/src/utils"
+	"github.com/lowRISC/opentitan-provisioning/src/cert/signer"
+	"github.com/lowRISC/opentitan-provisioning/src/cert/templates/tpm"
+	"github.com/lowRISC/opentitan-provisioning/src/spm/services/certloader"
+	"github.com/lowRISC/opentitan-provisioning/src/utils"
 )
 
 const (

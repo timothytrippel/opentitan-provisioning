@@ -14,7 +14,7 @@ AUTH_SERVICE_TEST_DEPS = [
 
 go_library(
     name = "auth_service",
-    importpath = "github.com/lowRISC/ot-provisioning/src/transport/auth_service",
+    importpath = "github.com/lowRISC/opentitan-provisioning/src/transport/auth_service",
     srcs = [
         "auth_service.go",
         "auth_interceptor.go",
@@ -31,7 +31,7 @@ go_library(
 )
 go_library(
     name = "session_token",
-    importpath = "github.com/lowRISC/ot-provisioning/src/transport/auth_service/session_token",
+    importpath = "github.com/lowRISC/opentitan-provisioning/src/transport/auth_service/session_token",
     srcs = ["session_token.go"],
     deps = [
         "@org_golang_google_grpc//codes",

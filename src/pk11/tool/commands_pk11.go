@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/lowRISC/ot-provisioning/src/pk11"
+	"github.com/lowRISC/opentitan-provisioning/src/pk11"
 )
 
 // pk11Commands loads general PCKS#11 commands.

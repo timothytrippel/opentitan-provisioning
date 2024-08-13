@@ -10,7 +10,7 @@ import (
 	"crypto/x509/pkix"
 	"math/big"
 
-	"github.com/lowRISC/ot-provisioning/src/cert/signer"
+	"github.com/lowRISC/opentitan-provisioning/src/cert/signer"
 )
 
 type builder struct{}

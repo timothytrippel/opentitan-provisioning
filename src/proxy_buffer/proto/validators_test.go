@@ -6,9 +6,9 @@ package validators
 import (
 	"testing"
 
-	dpb "github.com/lowRISC/ot-provisioning/src/proto/device_id_go_pb"
-	common_validators "github.com/lowRISC/ot-provisioning/src/proto/validators"
-	pb "github.com/lowRISC/ot-provisioning/src/proxy_buffer/proto/proxy_buffer_go_pb"
+	dpb "github.com/lowRISC/opentitan-provisioning/src/proto/device_id_go_pb"
+	common_validators "github.com/lowRISC/opentitan-provisioning/src/proto/validators"
+	pb "github.com/lowRISC/opentitan-provisioning/src/proxy_buffer/proto/proxy_buffer_go_pb"
 )
 
 var (

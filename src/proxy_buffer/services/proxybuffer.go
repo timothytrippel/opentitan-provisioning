@@ -12,9 +12,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	pbp "github.com/lowRISC/ot-provisioning/src/proxy_buffer/proto/proxy_buffer_go_pb"
-	"github.com/lowRISC/ot-provisioning/src/proxy_buffer/proto/validators"
-	"github.com/lowRISC/ot-provisioning/src/proxy_buffer/store/db"
+	pbp "github.com/lowRISC/opentitan-provisioning/src/proxy_buffer/proto/proxy_buffer_go_pb"
+	"github.com/lowRISC/opentitan-provisioning/src/proxy_buffer/proto/validators"
+	"github.com/lowRISC/opentitan-provisioning/src/proxy_buffer/store/db"
 )
 
 // server is the server object.

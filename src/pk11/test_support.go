@@ -19,9 +19,9 @@ import (
 	"testing"
 
 	"github.com/bazelbuild/rules_go/go/tools/bazel"
-	"github.com/lowRISC/ot-provisioning/third_party/softhsm2/test_config"
+	"github.com/lowRISC/opentitan-provisioning/third_party/softhsm2/test_config"
 
-	"github.com/lowRISC/ot-provisioning/src/pk11"
+	"github.com/lowRISC/opentitan-provisioning/src/pk11"
 )
 
 const (

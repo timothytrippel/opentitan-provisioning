@@ -11,8 +11,8 @@ import (
 
 	"github.com/golang/protobuf/proto"
 
-	dpb "github.com/lowRISC/ot-provisioning/src/proto/device_id_go_pb"
-	"github.com/lowRISC/ot-provisioning/src/proxy_buffer/store/connector"
+	dpb "github.com/lowRISC/opentitan-provisioning/src/proto/device_id_go_pb"
+	"github.com/lowRISC/opentitan-provisioning/src/proxy_buffer/store/connector"
 )
 
 const (

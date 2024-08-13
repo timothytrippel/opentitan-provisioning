@@ -15,7 +15,7 @@ filegroup(
 
 go_library(
     name = "tpm",
-    importpath = "github.com/lowRISC/ot-provisioning/src/cert/templates/tpm",
+    importpath = "github.com/lowRISC/opentitan-provisioning/src/cert/templates/tpm",
     srcs = ["tpm.go"],
     deps = [
         "//src/cert:signer",

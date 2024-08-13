@@ -9,7 +9,7 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 
-	"github.com/lowRISC/ot-provisioning/src/pk11"
+	"github.com/lowRISC/opentitan-provisioning/src/pk11"
 )
 
 // cryptoCommands loads general cryptography commands.

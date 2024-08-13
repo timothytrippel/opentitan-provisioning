@@ -17,12 +17,12 @@ import (
 	"google.golang.org/grpc/test/bufconn"
 	"google.golang.org/protobuf/testing/protocmp"
 
-	dpb "github.com/lowRISC/ot-provisioning/src/proto/device_id_go_pb"
-	dtd "github.com/lowRISC/ot-provisioning/src/proto/device_testdata"
-	pbp "github.com/lowRISC/ot-provisioning/src/proxy_buffer/proto/proxy_buffer_go_pb"
-	"github.com/lowRISC/ot-provisioning/src/proxy_buffer/services/proxybuffer"
-	"github.com/lowRISC/ot-provisioning/src/proxy_buffer/store/db"
-	"github.com/lowRISC/ot-provisioning/src/proxy_buffer/store/db_fake"
+	dpb "github.com/lowRISC/opentitan-provisioning/src/proto/device_id_go_pb"
+	dtd "github.com/lowRISC/opentitan-provisioning/src/proto/device_testdata"
+	pbp "github.com/lowRISC/opentitan-provisioning/src/proxy_buffer/proto/proxy_buffer_go_pb"
+	"github.com/lowRISC/opentitan-provisioning/src/proxy_buffer/services/proxybuffer"
+	"github.com/lowRISC/opentitan-provisioning/src/proxy_buffer/store/db"
+	"github.com/lowRISC/opentitan-provisioning/src/proxy_buffer/store/db_fake"
 )
 
 const (

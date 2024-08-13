@@ -16,9 +16,9 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/testing/protocmp"
 
-	dpb "github.com/lowRISC/ot-provisioning/src/proto/device_id_go_pb"
-	dtd "github.com/lowRISC/ot-provisioning/src/proto/device_testdata"
-	pbp "github.com/lowRISC/ot-provisioning/src/proxy_buffer/proto/proxy_buffer_go_pb"
+	dpb "github.com/lowRISC/opentitan-provisioning/src/proto/device_id_go_pb"
+	dtd "github.com/lowRISC/opentitan-provisioning/src/proto/device_testdata"
+	pbp "github.com/lowRISC/opentitan-provisioning/src/proxy_buffer/proto/proxy_buffer_go_pb"
 )
 
 func TestRegisterDevice(t *testing.T) {

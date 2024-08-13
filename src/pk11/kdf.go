@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/lowRISC/ot-provisioning/src/pk11/native"
+	"github.com/lowRISC/opentitan-provisioning/src/pk11/native"
 	"github.com/miekg/pkcs11"
 )
 

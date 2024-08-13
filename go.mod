@@ -1,8 +1,8 @@
-module github.com/lowRISC/ot-provisioning
+module github.com/lowRISC/opentitan-provisioning
 
 go 1.18
 
-replace github.com/lowRISC/ot-provisioning => ./
+replace github.com/lowRISC/opentitan-provisioning => ./
 
 require (
 	github.com/golang/protobuf v1.5.2

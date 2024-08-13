@@ -14,8 +14,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/lowRISC/ot-provisioning/src/pk11"
-	"github.com/lowRISC/ot-provisioning/src/pk11/tool/lex"
+	"github.com/lowRISC/opentitan-provisioning/src/pk11"
+	"github.com/lowRISC/opentitan-provisioning/src/pk11/tool/lex"
 )
 
 // Stringify generates a string representation of various values that commands

@@ -10,7 +10,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/lowRISC/ot-provisioning/src/proxy_buffer/store/connector"
+	"github.com/lowRISC/opentitan-provisioning/src/proxy_buffer/store/connector"
 )
 
 // versionedKey implements a versioned key which can be used as a key in a map.

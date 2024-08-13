@@ -21,7 +21,7 @@ proto_library(
 go_proto_library(
     name = "pa_go_pb",
     compilers = ["@io_bazel_rules_go//proto:go_grpc"],
-    importpath = "github.com/lowRISC/ot-provisioning/src/pa/proto/pa_go_pb",
+    importpath = "github.com/lowRISC/opentitan-provisioning/src/pa/proto/pa_go_pb",
     proto = ":pa_proto",
     deps = [
         "//src/proto/crypto:wrap_go_pb",

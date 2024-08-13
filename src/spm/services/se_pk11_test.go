@@ -19,11 +19,11 @@ import (
 	kwp "github.com/google/tink/go/kwp/subtle"
 	"golang.org/x/crypto/hkdf"
 
-	"github.com/lowRISC/ot-provisioning/src/cert/signer"
-	"github.com/lowRISC/ot-provisioning/src/cert/templates/tpm"
-	"github.com/lowRISC/ot-provisioning/src/pk11"
-	ts "github.com/lowRISC/ot-provisioning/src/pk11/test_support"
-	certloader "github.com/lowRISC/ot-provisioning/src/spm/services/certloader"
+	"github.com/lowRISC/opentitan-provisioning/src/cert/signer"
+	"github.com/lowRISC/opentitan-provisioning/src/cert/templates/tpm"
+	"github.com/lowRISC/opentitan-provisioning/src/pk11"
+	ts "github.com/lowRISC/opentitan-provisioning/src/pk11/test_support"
+	certloader "github.com/lowRISC/opentitan-provisioning/src/spm/services/certloader"
 )
 
 // Creates a new HSM for a test by reaching into the tests's SoftHSM token.

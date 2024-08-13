@@ -20,7 +20,7 @@ proto_library(
 go_proto_library(
     name = "proxy_buffer_go_pb",
     compilers = ["@io_bazel_rules_go//proto:go_grpc"],
-    importpath = "github.com/lowRISC/ot-provisioning/src/proxy_buffer/proto/proxy_buffer_go_pb",
+    importpath = "github.com/lowRISC/opentitan-provisioning/src/proxy_buffer/proto/proxy_buffer_go_pb",
     proto = ":proxy_buffer_proto",
     deps = [
         "//src/proto:device_id_go_pb",
@@ -30,7 +30,7 @@ go_proto_library(
 go_library(
     name = "validators",
     srcs = ["validators.go"],
-    importpath = "github.com/lowRISC/ot-provisioning/src/proxy_buffer/proto/validators",
+    importpath = "github.com/lowRISC/opentitan-provisioning/src/proxy_buffer/proto/validators",
     deps = [
         ":proxy_buffer_go_pb",
         "//src/proto:validators",

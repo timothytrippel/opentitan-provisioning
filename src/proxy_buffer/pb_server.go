@@ -31,10 +31,10 @@ import (
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"google.golang.org/grpc"
 
-	pbp "github.com/lowRISC/ot-provisioning/src/proxy_buffer/proto/proxy_buffer_go_pb"
-	"github.com/lowRISC/ot-provisioning/src/proxy_buffer/services/proxybuffer"
-	"github.com/lowRISC/ot-provisioning/src/proxy_buffer/store/db"
-	"github.com/lowRISC/ot-provisioning/src/proxy_buffer/store/etcd"
+	pbp "github.com/lowRISC/opentitan-provisioning/src/proxy_buffer/proto/proxy_buffer_go_pb"
+	"github.com/lowRISC/opentitan-provisioning/src/proxy_buffer/services/proxybuffer"
+	"github.com/lowRISC/opentitan-provisioning/src/proxy_buffer/store/db"
+	"github.com/lowRISC/opentitan-provisioning/src/proxy_buffer/store/etcd"
 )
 
 var (

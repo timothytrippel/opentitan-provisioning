@@ -15,8 +15,8 @@ import (
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
 
-	pbp "github.com/lowRISC/ot-provisioning/src/pa/proto/pa_go_pb"
-	"github.com/lowRISC/ot-provisioning/src/transport/grpconn"
+	pbp "github.com/lowRISC/opentitan-provisioning/src/pa/proto/pa_go_pb"
+	"github.com/lowRISC/opentitan-provisioning/src/transport/grpconn"
 )
 
 const (

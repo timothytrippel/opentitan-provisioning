@@ -8,7 +8,7 @@ package(default_visibility = ["//visibility:public"])
 
 go_library(
     name = "test_config",
-    importpath = "github.com/lowRISC/ot-provisioning/third_party/softhsm2/test_config",
+    importpath = "github.com/lowRISC/opentitan-provisioning/third_party/softhsm2/test_config",
     srcs = ["test_config.go"],
 )
 

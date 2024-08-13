@@ -22,9 +22,9 @@ import (
 	"testing"
 
 	"github.com/bazelbuild/rules_go/go/tools/bazel"
-	"github.com/lowRISC/ot-provisioning/src/pk11"
-	ts "github.com/lowRISC/ot-provisioning/src/pk11/test_support"
-	"github.com/lowRISC/ot-provisioning/src/pk11/tool/lex"
+	"github.com/lowRISC/opentitan-provisioning/src/pk11"
+	ts "github.com/lowRISC/opentitan-provisioning/src/pk11/test_support"
+	"github.com/lowRISC/opentitan-provisioning/src/pk11/tool/lex"
 )
 
 func newFile(t *testing.T, contents []byte) string {

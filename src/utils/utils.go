@@ -18,7 +18,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/lowRISC/ot-provisioning/src/version/buildver"
+	"github.com/lowRISC/opentitan-provisioning/src/version/buildver"
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

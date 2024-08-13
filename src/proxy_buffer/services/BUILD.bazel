@@ -8,7 +8,7 @@ package(default_visibility = ["//visibility:public"])
 
 go_library(
     name = "proxybuffer",
-    importpath = "github.com/lowRISC/ot-provisioning/src/proxy_buffer/services/proxybuffer",
+    importpath = "github.com/lowRISC/opentitan-provisioning/src/proxy_buffer/services/proxybuffer",
     srcs = ["proxybuffer.go"],
     deps = [
         "//src/proxy_buffer/proto:validators",

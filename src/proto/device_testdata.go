@@ -6,7 +6,7 @@
 package device_testdata
 
 import (
-	dpb "github.com/lowRISC/ot-provisioning/src/proto/device_id_go_pb"
+	dpb "github.com/lowRISC/opentitan-provisioning/src/proto/device_id_go_pb"
 )
 
 const (

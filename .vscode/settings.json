@@ -16,7 +16,7 @@
         "-bazel-src"
       ],
       "formatting.gofumpt": true,
-      "formatting.local": "github.com/lowRISC/ot-provisioning",
+      "formatting.local": "github.com/lowRISC/opentitan-provisioning",
       "ui.completion.usePlaceholders": true,
       "ui.semanticTokens": true,
       "ui.codelenses": {

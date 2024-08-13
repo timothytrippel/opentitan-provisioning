@@ -21,21 +21,21 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/lowRISC/ot-provisioning/src/pk11"
-	"github.com/lowRISC/ot-provisioning/src/spm/services/certloader"
-	"github.com/lowRISC/ot-provisioning/src/spm/services/se"
-	"github.com/lowRISC/ot-provisioning/src/transport/auth_service/session_token"
-	"github.com/lowRISC/ot-provisioning/src/utils"
+	"github.com/lowRISC/opentitan-provisioning/src/pk11"
+	"github.com/lowRISC/opentitan-provisioning/src/spm/services/certloader"
+	"github.com/lowRISC/opentitan-provisioning/src/spm/services/se"
+	"github.com/lowRISC/opentitan-provisioning/src/transport/auth_service/session_token"
+	"github.com/lowRISC/opentitan-provisioning/src/utils"
 
-	pbcommon "github.com/lowRISC/ot-provisioning/src/proto/crypto/common_go_pb"
-	pbe "github.com/lowRISC/ot-provisioning/src/proto/crypto/ecdsa_go_pb"
-	pbr "github.com/lowRISC/ot-provisioning/src/proto/crypto/rsa_ssa_pcks1_go_pb"
+	pbcommon "github.com/lowRISC/opentitan-provisioning/src/proto/crypto/common_go_pb"
+	pbe "github.com/lowRISC/opentitan-provisioning/src/proto/crypto/ecdsa_go_pb"
+	pbr "github.com/lowRISC/opentitan-provisioning/src/proto/crypto/rsa_ssa_pcks1_go_pb"
 
-	pbw "github.com/lowRISC/ot-provisioning/src/proto/crypto/wrap_go_pb"
-	pbd "github.com/lowRISC/ot-provisioning/src/proto/device_id_go_pb"
+	pbw "github.com/lowRISC/opentitan-provisioning/src/proto/crypto/wrap_go_pb"
+	pbd "github.com/lowRISC/opentitan-provisioning/src/proto/device_id_go_pb"
 
-	pbp "github.com/lowRISC/ot-provisioning/src/pa/proto/pa_go_pb"
-	pbs "github.com/lowRISC/ot-provisioning/src/spm/proto/spm_go_pb"
+	pbp "github.com/lowRISC/opentitan-provisioning/src/pa/proto/pa_go_pb"
+	pbs "github.com/lowRISC/opentitan-provisioning/src/spm/proto/spm_go_pb"
 )
 
 // Options contain configuration options for the SPM service.

@@ -9,7 +9,7 @@ package(default_visibility = ["//visibility:public"])
 
 go_library(
     name = "grpconn",
-    importpath = "github.com/lowRISC/ot-provisioning/src/transport/grpconn",
+    importpath = "github.com/lowRISC/opentitan-provisioning/src/transport/grpconn",
     srcs = ["grpconn.go"],
     deps = [
         "//src/utils",

@@ -12,7 +12,7 @@ go_library(
         "logger.go",
         "logger_interface.go",
     ],
-    importpath = "github.com/lowRISC/ot-provisioning/src/logger",
+    importpath = "github.com/lowRISC/opentitan-provisioning/src/logger",
 )
 
 go_test(

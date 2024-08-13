@@ -12,9 +12,9 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/protobuf/testing/protocmp"
 
-	dpb "github.com/lowRISC/ot-provisioning/src/proto/device_id_go_pb"
-	"github.com/lowRISC/ot-provisioning/src/proxy_buffer/store/db"
-	"github.com/lowRISC/ot-provisioning/src/proxy_buffer/store/db_fake"
+	dpb "github.com/lowRISC/opentitan-provisioning/src/proto/device_id_go_pb"
+	"github.com/lowRISC/opentitan-provisioning/src/proxy_buffer/store/db"
+	"github.com/lowRISC/opentitan-provisioning/src/proxy_buffer/store/db_fake"
 )
 
 func TestInsert(t *testing.T) {
