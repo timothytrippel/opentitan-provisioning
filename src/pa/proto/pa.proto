@@ -89,14 +89,16 @@ enum SymmetricKeySize {
 
 // Derive symmetric key request.
 message DeriveSymmetricKeyRequest{
+  // SKU identifier. Required.
+  string sku = 1;
   // Symmetric key seed to use. Required.
-  SymmetricKeySeed seed = 1;
+  SymmetricKeySeed seed = 2;
   // Symmetric key type to generate. Required.
-  SymmetricKeyType type = 2;
+  SymmetricKeyType type = 3;
   // Symmetric key size. Required.
-  SymmetricKeySize size = 3;
+  SymmetricKeySize size = 4;
   // Diversifier string to use in KDF operation. Required.
-  string diversifier = 4;
+  string diversifier = 5;
 }
 
 // Derive symmetric key response.
