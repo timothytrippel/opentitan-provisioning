@@ -137,9 +137,11 @@ func (s *server) EndorseCerts(ctx context.Context, request *pbp.EndorseCertsRequ
 // the SPM/HSM) and diversifier string.
 func (s *server) DeriveSymmetricKey(ctx context.Context, request *pbp.DeriveSymmetricKeyRequest) (*pbp.DeriveSymmetricKeyResponse, error) {
 	log.Printf("In PA - Recieved DeriveSymmetricKey request with diversifier string: %s", request.Diversifier)
-
-	// TODO(#4) implement backend operations.
-	return nil, nil
+	r, err := s.spmClient.DeriveSymmetricKey(ctx, request)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "SPM returned error: %v", err)
+	}
+	return r, nil
 }
 
 // SendDeviceRegistrationPayload registers a new device record to the local MySql DB.

@@ -101,15 +101,17 @@ type AuthConfig struct {
 }
 
 type Config struct {
-	Sku             string                               `yaml:"sku"`
-	SlotID          int                                  `yaml:"slotId"`
-	NumSessions     int                                  `yaml:"numSessions"`
-	WrapKeyName     string                               `yaml:"wrapKeyName"`
-	CaKeyName       string                               `yaml:"caKeyName"`
-	CertTemplate    []certloader.CertificateConfig       `yaml:"certTemplate"`
-	CertTemplateSan certloader.CertificateSubjectAltName `yaml:"certTemplateSAN"`
-	Keys            []certloader.Key                     `yaml:"keyWrapConfig"`
-	RootCaPath      string                               `yaml:"rootCAPath"`
+	Sku                string                               `yaml:"sku"`
+	SlotID             int                                  `yaml:"slotId"`
+	NumSessions        int                                  `yaml:"numSessions"`
+	WrapKeyName        string                               `yaml:"wrapKeyName"`
+	HighSecSeedKeyName string                               `yaml:"highSecSeedKeyName"`
+	LowSecSeedKeyName  string                               `yaml:"lowSecSeedKeyName"`
+	CaKeyName          string                               `yaml:"caKeyName"`
+	CertTemplate       []certloader.CertificateConfig       `yaml:"certTemplate"`
+	CertTemplateSan    certloader.CertificateSubjectAltName `yaml:"certTemplateSAN"`
+	Keys               []certloader.Key                     `yaml:"keyWrapConfig"`
+	RootCaPath         string                               `yaml:"rootCAPath"`
 }
 
 type skuState struct {
@@ -175,14 +177,10 @@ func (s *server) initSku(sku string) (string, error) {
 		log.Printf("failed to generate session token: %v", err)
 		return "", status.Errorf(codes.NotFound, "failed to generate session token: %v", err)
 	}
-
-	if strings.HasPrefix(sku, "tpm_") {
-		log.Printf("SPM.InitSession Response - TPM Token")
-		err = s.initializeSKU(sku)
-		if err != nil {
-			log.Printf("failed to initialize sku: %v", err)
-			return "", status.Errorf(codes.Internal, "failed to initialize sku")
-		}
+	err = s.initializeSKU(sku)
+	if err != nil {
+		log.Printf("failed to initialize sku: %v", err)
+		return "", status.Errorf(codes.Internal, "failed to initialize sku")
 	}
 	return token, nil
 }
@@ -271,6 +269,69 @@ func (s *server) CreateKeyAndCert(ctx context.Context, request *pbp.CreateKeyAnd
 	}, nil
 }
 
+// DeriveSymmetricKey generates a symmetric key from a seed and diversification string.
+func (s *server) DeriveSymmetricKey(ctx context.Context, request *pbp.DeriveSymmetricKeyRequest) (*pbp.DeriveSymmetricKeyResponse, error) {
+	// Acquire mutex before accessing SKU configuration.
+	s.muSKU.RLock()
+	defer s.muSKU.RUnlock()
+	sku, ok := s.skus[request.Sku]
+	if !ok {
+		return nil, status.Errorf(codes.NotFound,
+			"unable to find sku %q. Try calling InitSession first", request.Sku)
+	}
+
+	// Retrieve seed configuration.
+	var useHighSecSeed bool
+	if request.Seed == pbp.SymmetricKeySeed_SYMMETRIC_KEY_SEED_HIGH_SECURITY {
+		useHighSecSeed = true
+	} else if request.Seed == pbp.SymmetricKeySeed_SYMMETRIC_KEY_SEED_LOW_SECURITY {
+		useHighSecSeed = false
+	} else {
+		return nil, status.Errorf(codes.InvalidArgument,
+			"invalid key seed requested: %d", request.Seed)
+	}
+
+	// Retrieve key size.
+	var keySizeInBits uint
+	if request.Size == pbp.SymmetricKeySize_SYMMETRIC_KEY_SIZE_128_BITS {
+		keySizeInBits = 128
+	} else if request.Size == pbp.SymmetricKeySize_SYMMETRIC_KEY_SIZE_256_BITS {
+		keySizeInBits = 256
+	} else {
+		return nil, status.Errorf(codes.InvalidArgument,
+			"invalid key size requested: %d", request.Size)
+	}
+
+	// Retrieve key type.
+	var keyType uint
+	if request.Type == pbp.SymmetricKeyType_SYMMETRIC_KEY_TYPE_RAW {
+		keyType = se.SymmetricKeyTypeRaw
+	} else if request.Type == pbp.SymmetricKeyType_SYMMETRIC_KEY_TYPE_HASHED_OT_LC_TOKEN {
+		keyType = se.SymmetricKeyTypeHashedOtLcToken
+	} else {
+		return nil, status.Errorf(codes.InvalidArgument,
+			"invalid key type requested: %d", request.Type)
+	}
+
+	// Generate the symmetric key.
+	p := se.SymmetricKeygenParams{
+		UseHighSecuritySeed: useHighSecSeed,
+		KeyType:             keyType,
+		SizeInBits:          keySizeInBits,
+		Sku:                 request.Sku,
+		Diversifier:         request.Diversifier,
+	}
+	keygenParams := []*se.SymmetricKeygenParams{&p}
+	keys, err := sku.seHandle.GenerateSymmetricKey(keygenParams)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "could not generate symmetric key: %s", err)
+	}
+
+	return &pbp.DeriveSymmetricKeyResponse{
+		Key: keys[0],
+	}, nil
+}
+
 func (s *server) initializeSKU(skuName string) error {
 	s.muSKU.Lock()
 	defer s.muSKU.Unlock()
@@ -318,6 +379,8 @@ func (s *server) initializeSKU(skuName string) error {
 		NumSessions: cfg.NumSessions,
 		KGName:      cfg.WrapKeyName,
 		KcaName:     cfg.CaKeyName,
+		KHsksName:   cfg.HighSecSeedKeyName,
+		KLsksName:   cfg.LowSecSeedKeyName,
 		HSMType:     s.hsmType,
 	})
 	if err != nil {
