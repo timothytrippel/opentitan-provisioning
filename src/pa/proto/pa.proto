@@ -114,9 +114,9 @@ message DeriveSymmetricKeyResponse{
 message CreateKeyAndCertRequest {
   // SKU identifier. Required.
   string sku = 1;
-  // Device identifier. Required.
+  // Device identifier. Optional.
   device_id.DeviceId device_id = 2;
-  // Serial Number per sku. Optional.
+  // Serial Number per sku. Required.
   bytes serial_number = 3;
 }
 
