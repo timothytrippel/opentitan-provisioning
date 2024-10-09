@@ -22,6 +22,9 @@ nogo(
     visibility = ["//visibility:public"],
 )
 
+# gazelle:prefix github.com/lowRISC/opentitan-provisioning
+gazelle(name = "gazelle")
+
 # Use this rule to update Go dependencies.
 #
 # Note: Gazelle really likes to mess with WORKSPACE, even though

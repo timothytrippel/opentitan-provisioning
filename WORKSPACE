@@ -34,28 +34,30 @@ crt_register_toolchains(
     win64 = True,
 )
 
-# gazelle:repository_macro third_party/go/deps.bzl%go_packages_
-load("//third_party/go:repos.bzl", "go_repos")
-go_repos()
-load("//third_party/go:deps.bzl", "go_deps")
-go_deps()
-
-# Various linters.
+# Other linters.
 load("//third_party/lint:repos.bzl", "lint_repos")
 lint_repos()
+
+# Protobuf and gRPC dependencies.
+load("//third_party/proto:repos.bzl", "proto_repos")
+proto_repos()
+register_toolchains("@build_stack_rules_proto//toolchain:standard")
+load("@build_stack_rules_proto//deps:core_deps.bzl", "core_deps")
+core_deps()
+#load("@build_stack_rules_proto//deps:go_core_deps.bzl", "go_core_deps")
+#go_core_deps()
+# gazelle:repository_macro third_party/go/deps.bzl%go_packages_
+load("//third_party/go:deps.bzl", "local_go_deps")
+local_go_deps()
+load("@build_stack_rules_proto//deps:protobuf_core_deps.bzl", "protobuf_core_deps")
+protobuf_core_deps()
 
 # Google dependencies.
 # BoringSSL, RE2, GoogleTest, Protobuf Matchers, ABSL, Protobuf, gRPC.
 load("//third_party/google:repos.bzl", "google_repos")
 google_repos()
-# Load the deps from the Google repos in the correct order.
-load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
-protobuf_deps()
-load("@com_github_grpc_grpc//bazel:grpc_deps.bzl", "grpc_deps")
-grpc_deps()
-load("@com_github_grpc_grpc//bazel:grpc_extra_deps.bzl", "grpc_extra_deps")
-grpc_extra_deps()
 
+# Foreign CC and packaging rules.
 load("//third_party/bazel:repos.bzl", "bazel_repos")
 bazel_repos()
 load("//third_party/bazel:deps.bzl", "bazel_deps")
