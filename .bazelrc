@@ -9,8 +9,22 @@ build --action_env=BAZEL_CXXOPTS="-std=c++14"
 #build --cxxopt="-std=c++14"
 build --conlyopt="-std=c11"
 
+# Override default enablement of CRT flags.
+build --features=-all_warnings_as_errors
+
 # Enable toolchain resolution with cc
 build --incompatible_enable_cc_toolchain_resolution
 
 # Versioning
 build --workspace_status_command=util/get_workspace_status.sh
+
+# Enable the rust nightly toolchain
+build --@rules_rust//rust/toolchain/channel=nightly
+
+# Configure the rust 'clippy' linter.
+build --aspects=@rules_rust//rust:defs.bzl%rust_clippy_aspect
+build --output_groups=+clippy_checks
+build --@rules_rust//:clippy_flags="-Aclippy::bool_assert_comparison,-Aclippy::uninlined_format_args,-Wclippy::undocumented_unsafe_blocks,-Dwarnings"
+
+# Import site-specific configuration.
+try-import .bazelrc-site
