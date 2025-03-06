@@ -214,22 +214,6 @@ typedef struct wrapped_seed {
 } wrapped_seed_t;
 
 /**
- * blobType is tag indicating the blob content.
- */
-enum BlobType : uint32_t {
-  RSA_2048_KEY_PAYLOAD = 3,
-  ECC_256_KEY_PAYLOAD = 4,
-  ECC_384_KEY_PAYLOAD = 5,
-  RSA_3072_KEY_PAYLOAD = 7,
-  RSA_4096_KEY_PAYLOAD = 9,
-  RSA_2048_KEY_CERT = RSA_2048_KEY_PAYLOAD * 2,  // 6
-  ECC_256_KEY_CERT = ECC_256_KEY_PAYLOAD * 2,    // 8
-  ECC_384_KEY_CERT = ECC_384_KEY_PAYLOAD * 2,    // 10
-  RSA_3072_KEY_CERT = RSA_3072_KEY_PAYLOAD * 2,  // 14
-  RSA_4096_KEY_CERT = RSA_4096_KEY_PAYLOAD * 2,  // 18
-};
-
-/**
  * DeviceLifeCycle encodes the state of the device as it is being manufactured
  * and provisioned for shipment.
  */
@@ -244,35 +228,6 @@ enum DeviceLifeCycle : uint32_t {
   DEVICE_LIFE_CYCLE_RMA = 7,
   DEVICE_LIFE_CYCLE_SCRAP = 8,
 };
-
-enum ProvState : uint32_t {
-  DEVICE_STATE_UNSPECIFIED = 0,  // default -- not valid in message
-  DEVICE_STATE_PROVISIONED = 1,  // device provisioned, and data is valid
-  DEVICE_STATE_PROV_READ = 2,    // provisioned and read
-  DEVICE_STATE_PROV_REPORT = 3,  // provisioned and reported to customer
-  DEVICE_STATE_INVALID = 4,      // provision failed – data is invalid
-  DEVICE_STATE_REVOKED = 5,      // manufacturer revoked the provisioning data
-};
-
-enum DeviceIdPubFormat : uint32_t {
-  DEVICE_ID_PUB_FORMAT_UNSPECIFIED = 0,  // default -- not valid in messages
-  DEVICE_ID_PUB_FORMAT_DER = 1,
-  DEVICE_ID_PUB_FORMAT_PEM = 2,
-  DEVICE_ID_PUB_FORMAT_RAW_ECDSA = 3,  // X & Y
-};
-
-/**
- * The blob_t is a blob of data passed from ATE to secigen.
- * keep fields 4-bytes aligned.
- */
-typedef struct Blob {
-  /** type of blob */
-  BlobType type;
-  /** length of the value field */
-  uint32_t len;
-  /** blob value - a place holder for the data*/
-  uint8_t value[1];
-} blob_t;
 
 /**
  * Creates an AteClient instance.
@@ -310,20 +265,6 @@ DLLEXPORT int InitSession(ate_client_ptr client, const char* sku,
  * @return The result of the operation.
  */
 DLLEXPORT int CloseSession(ate_client_ptr client);
-
-/**
- * Creates blobs containing keys and their certificates.
- *
- * @param client A client instance.
- * @param sku The SKU of the product to create the key/certificate for.
- * @param data The opaque blobs.
- * @param max_data_size (input/output) The maximal/returned buffer size
- * @return The result of the operation (blobs of 'blob_t' type).
- */
-DLLEXPORT int CreateKeyAndCertificate(ate_client_ptr client, const char* sku,
-                                      void* data, size_t* max_data_size,
-                                      const void* serial_number,
-                                      const size_t serial_number_size);
 
 /**
  * Derive symmetric keys.

@@ -19,8 +19,6 @@ service ProvisioningApplianceService {
     returns (InitSessionResponse) {}
   rpc CloseSession(CloseSessionRequest)
     returns (CloseSessionResponse) {}
-  rpc CreateKeyAndCert(CreateKeyAndCertRequest)
-    returns (CreateKeyAndCertResponse) {}
   rpc EndorseCerts(EndorseCertsRequest)
     returns (EndorseCertsResponse) {}
   rpc DeriveSymmetricKeys(DeriveSymmetricKeysRequest)
@@ -133,34 +131,6 @@ message DeriveSymmetricKeysResponse{
   repeated SymmetricKey keys = 1;
 }
 
-// Create key and endorsement certificates request.
-// The `sku` fields is used as an unique key to
-// implement the specific key gen and endorsement certificate flow for a
-// class of Devices.
-message CreateKeyAndCertRequest {
-  // SKU identifier. Required.
-  string sku = 1;
-  // Device identifier. Optional.
-  ot.DeviceId device_id = 2;
-  // Serial Number per sku. Required.
-  bytes serial_number = 3;
-}
-
-// Endorsed key bundle.
-message EndorsedKey {
-  // Certificate endorsing the public portion of the private key encapsulated
-  // inside `wrapped_key`. This field is not set if `wrapped_key` encapsulates
-  // a symmetric key.
-  crypto.cert.Certificate cert = 1;
-  // Wrapped key object.
-  crypto.wrap.WrappedKey wrapped_key = 2;
-}
-
-// Create key and endorsement certificates reponse.
-message CreateKeyAndCertResponse {
-  // List of keys.
-  repeated EndorsedKey keys = 1;
-}
 
 // Initialize SKU session request.
 message InitSessionRequest {
@@ -177,7 +147,7 @@ message InitSessionResponse {
   // to the authentication layer in the future.
   string sku_session_token = 1;
   // PA endpoint. The client should select connections to this client to issue
-  // any provisioning calls (e.g. CreateKeyAndCertRequest).
+  // any provisioning calls (e.g. DeriveSymmetricKeys).
   string pa_endpoint = 2;
   // List of authenticate methods. Required.
   repeated string auth_methods = 3;

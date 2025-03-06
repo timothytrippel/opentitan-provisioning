@@ -109,18 +109,6 @@ func (s *server) CloseSession(ctx context.Context, request *pap.CloseSessionRequ
 	return &pap.CloseSessionResponse{}, nil
 }
 
-// CreateKeyAndCert generates a set of wrapped keys, returns them and their endorsement certificates.
-func (s *server) CreateKeyAndCert(ctx context.Context, request *pap.CreateKeyAndCertRequest) (*pap.CreateKeyAndCertResponse, error) {
-	log.Printf("In PA - Received CreateKeyAndCert request with Sku=%s", request.Sku)
-
-	// Call the service method, wait for server response.
-	r, err := s.spmClient.CreateKeyAndCert(ctx, request)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "SPM returned error: %v", err)
-	}
-	return r, nil
-}
-
 // EndorseCerts endorses a set of TBS certificates and returns them.
 func (s *server) EndorseCerts(ctx context.Context, request *pap.EndorseCertsRequest) (*pap.EndorseCertsResponse, error) {
 	log.Printf("In PA - Received EndorseCerts request with Sku=%s", request.Sku)

@@ -20,19 +20,6 @@ service SpmService {
   rpc InitSession(pa.InitSessionRequest)
     returns (pa.InitSessionResponse) {}
 
-  // CreateKeyAndCert generates a set of wrapped keys for a given Device. The
-  // number of keys, key types and endorsement certificates depend on the
-  // provided `product_identifier` and `sku`.
-  //
-  // All keys are wrapped with a symmetric key which has been pre-shared with
-  // the Device Under Test.
-  //
-  // All issued certificates are signed with a Silicon Creator Intermediate CA
-  // private key which can be verified against a Silicon Creator CA root
-  // certificate.
-  rpc CreateKeyAndCert(pa.CreateKeyAndCertRequest)
-      returns (pa.CreateKeyAndCertResponse) {}
-
   // DeriveSymmetricKeys generates symmetric keys from the following inputs:
   //   - a seed type (that matches a seed pre-provisioned in the SPM),
   //   - a key type (raw or cSHAKE128 hashed OpenTitan LC token),

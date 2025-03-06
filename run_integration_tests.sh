@@ -34,10 +34,11 @@ fi
 # Build and deploy containers.
 ./util/containers/deploy_test_k8_pod.sh
 
-# Run the loadtest on each SKU.
-echo "Running PA loadtest with sku: ${sku} ..."
+# Run the loadtest.
+echo "Running PA loadtest ..."
 bazelisk run //src/pa:loadtest -- \
     --pa_address="localhost:5001" \
     --sku_auth="test_password" \
     --parallel_clients=10 \
     --total_calls_per_method=10
+echo "Done."
