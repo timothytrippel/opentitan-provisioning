@@ -25,8 +25,6 @@ using grpc::ClientContext;
 using grpc::Status;
 using pa::CloseSessionRequest;
 using pa::CloseSessionResponse;
-using pa::CreateKeyAndCertRequest;
-using pa::CreateKeyAndCertResponse;
 using pa::DeriveSymmetricKeysRequest;
 using pa::DeriveSymmetricKeysResponse;
 using pa::EndorseCertsRequest;
@@ -108,31 +106,6 @@ Status AteClient::CloseSession() {
     return result;
   }
   return Status::OK;
-}
-
-Status AteClient::CreateKeyAndCert(const std::string& sku,
-                                   const void* serial_number,
-                                   const size_t serial_number_size,
-                                   CreateKeyAndCertResponse* reply) {
-  LOG(INFO) << "AteClient::CreateKeyAndCert";
-
-  // Data we are sending to the server.
-  CreateKeyAndCertRequest request;
-  request.set_sku(sku);
-
-  if (serial_number_size != 0 && serial_number != NULL) {
-    request.set_serial_number(
-        (std::string((uint8_t*)serial_number,
-                     (uint8_t*)serial_number + serial_number_size)));
-  }
-
-  // Context for the client (It could be used to convey extra information to
-  // the server and/or tweak certain RPC behaviors).
-  ClientContext context;
-  context.AddMetadata("authorization", sku_session_token_);
-
-  // The actual RPC - call the server's CreateKeyAndCert method.
-  return stub_->CreateKeyAndCert(&context, request, reply);
 }
 
 Status AteClient::EndorseCerts(EndorseCertsRequest& request,

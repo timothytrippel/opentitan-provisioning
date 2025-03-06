@@ -62,7 +62,6 @@ func (c *fakePbClient) RegisterDevice(ctx context.Context, request *pbr.DeviceRe
 // cases can set the fake responses as part of the test setup.
 type fakeSpmClient struct {
 	initSession         initSessionResponse
-	createKeyAndCert    createKeyAndCertFakeResponse
 	deriveSymmetricKeys deriveSymmetricKeysResponse
 	endorseCerts        endorseCertsResponse
 	endorseData         endorseDataResponse
@@ -70,11 +69,6 @@ type fakeSpmClient struct {
 
 type initSessionResponse struct {
 	response *pbp.InitSessionResponse
-	err      error
-}
-
-type createKeyAndCertFakeResponse struct {
-	response *pbp.CreateKeyAndCertResponse
 	err      error
 }
 
@@ -97,10 +91,6 @@ func (c *fakeSpmClient) InitSession(ctx context.Context, request *pbp.InitSessio
 	return c.initSession.response, c.initSession.err
 }
 
-func (c *fakeSpmClient) CreateKeyAndCert(ctx context.Context, request *pbp.CreateKeyAndCertRequest, opts ...grpc.CallOption) (*pbp.CreateKeyAndCertResponse, error) {
-	return c.createKeyAndCert.response, c.createKeyAndCert.err
-}
-
 func (c *fakeSpmClient) DeriveSymmetricKeys(ctx context.Context, request *pbp.DeriveSymmetricKeysRequest, opts ...grpc.CallOption) (*pbp.DeriveSymmetricKeysResponse, error) {
 	return c.deriveSymmetricKeys.response, c.deriveSymmetricKeys.err
 }
@@ -111,67 +101,6 @@ func (c *fakeSpmClient) EndorseCerts(ctx context.Context, request *pbp.EndorseCe
 
 func (c *fakeSpmClient) EndorseData(ctx context.Context, request *pbs.EndorseDataRequest, opts ...grpc.CallOption) (*pbs.EndorseDataResponse, error) {
 	return c.endorseData.response, c.endorseData.err
-}
-
-func TestCreateKeyAndCert(t *testing.T) {
-	ctx := context.Background()
-	spmClient := &fakeSpmClient{}
-	pbClient := &fakePbClient{}
-	conn, err := grpc.DialContext(ctx, "", grpc.WithInsecure(), grpc.WithContextDialer(bufferDialer(t, spmClient, pbClient)))
-	if err != nil {
-		t.Fatalf("failed to connect to test server: %v", err)
-	}
-	defer conn.Close()
-
-	client := pbp.NewProvisioningApplianceServiceClient(conn)
-
-	tests := []struct {
-		name        string
-		request     *pbp.CreateKeyAndCertRequest
-		expCode     codes.Code
-		spmResponse *pbp.CreateKeyAndCertResponse
-		spmError    error
-	}{
-		{
-			// This is a simple connectivity test. The request and expected
-			// response values should be updated if there is additional
-			// logic added to the PA service.
-			name:        "ok",
-			expCode:     codes.OK,
-			request:     &pbp.CreateKeyAndCertRequest{},
-			spmResponse: &pbp.CreateKeyAndCertResponse{},
-			spmError:    nil,
-		},
-		{
-			// SPM errors are converted to code.Internal.
-			name:        "spm_error",
-			expCode:     codes.Internal,
-			request:     &pbp.CreateKeyAndCertRequest{},
-			spmResponse: &pbp.CreateKeyAndCertResponse{},
-			spmError:    status.Errorf(codes.InvalidArgument, "invalid argument"),
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			spmClient.createKeyAndCert.response = tt.spmResponse
-			spmClient.createKeyAndCert.err = tt.spmError
-
-			got, err := client.CreateKeyAndCert(ctx, tt.request)
-			s, ok := status.FromError(err)
-			if !ok {
-				t.Fatal("unable to extract status code from error")
-			}
-			if s.Code() != tt.expCode {
-				t.Errorf("expected status code: %v, got: %v", tt.expCode, s.Code())
-			}
-			if got != nil {
-				if diff := cmp.Diff(tt.spmResponse, got, protocmp.Transform()); diff != "" {
-					t.Errorf("call returned unexpected diff (-want +got):\n%s", diff)
-				}
-			}
-		})
-	}
 }
 
 func TestDeriveSymmetricKey(t *testing.T) {
@@ -276,14 +205,8 @@ func TestEndorseCerts(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			spmClient.createKeyAndCert.response = &pbp.CreateKeyAndCertResponse{}
-			spmClient.createKeyAndCert.err = nil
-
 			spmClient.deriveSymmetricKeys.response = &pbp.DeriveSymmetricKeysResponse{}
 			spmClient.deriveSymmetricKeys.err = nil
-
-			spmClient.createKeyAndCert.response = &pbp.CreateKeyAndCertResponse{}
-			spmClient.createKeyAndCert.err = nil
 
 			spmClient.endorseCerts.response = tt.spmResponse
 			spmClient.endorseCerts.err = tt.spmError

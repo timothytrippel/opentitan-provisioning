@@ -7,16 +7,12 @@ package spm
 
 import (
 	"context"
-	"crypto/elliptic"
 	"crypto/x509"
-	"crypto/x509/pkix"
 	"fmt"
 	"log"
-	"math/big"
 	"os"
 	"strings"
 	"sync"
-	"time"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -29,10 +25,6 @@ import (
 
 	pbc "github.com/lowRISC/opentitan-provisioning/src/proto/crypto/cert_go_pb"
 	pbcommon "github.com/lowRISC/opentitan-provisioning/src/proto/crypto/common_go_pb"
-	pbe "github.com/lowRISC/opentitan-provisioning/src/proto/crypto/ecdsa_go_pb"
-	pbr "github.com/lowRISC/opentitan-provisioning/src/proto/crypto/rsa_ssa_pcks1_go_pb"
-
-	pbw "github.com/lowRISC/opentitan-provisioning/src/proto/crypto/wrap_go_pb"
 
 	pbp "github.com/lowRISC/opentitan-provisioning/src/pa/proto/pa_go_pb"
 	pbs "github.com/lowRISC/opentitan-provisioning/src/spm/proto/spm_go_pb"
@@ -201,45 +193,6 @@ func (s *server) InitSession(ctx context.Context, request *pbp.InitSessionReques
 	return &pbp.InitSessionResponse{
 		SkuSessionToken: token,
 		AuthMethods:     auth.Methods,
-	}, nil
-}
-
-// CreateKeyAndCert generates a set of wrapped keys for a given Device.
-func (s *server) CreateKeyAndCert(ctx context.Context, request *pbp.CreateKeyAndCertRequest) (*pbp.CreateKeyAndCertResponse, error) {
-	log.Printf("SPM.CreateKeyAndCertRequest - Sku:%q", request.Sku)
-
-	s.muSKU.RLock()
-	defer s.muSKU.RUnlock()
-	sku, ok := s.skus[request.Sku]
-	if !ok {
-		return nil, status.Errorf(codes.NotFound, "unable to find sku %q. Try calling InitSession first", request.Sku)
-	}
-
-	serialNumber := utils.NumToStr(request.SerialNumber, BigEndian)
-	signParams, err := s.getSigningParams(sku, serialNumber)
-	if err != nil {
-		return nil, status.Errorf(codes.OutOfRange, "could not retrieve cert template for device: %s", err)
-	}
-
-	rootCA, ok := sku.certs["RootCA"]
-	if !ok {
-		return nil, status.Errorf(codes.Internal, "could not find root CA certificate")
-	}
-
-	certs, err := sku.seHandle.GenerateKeyPairAndCert(rootCA, signParams)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "could not mint certificate: %s", err)
-	}
-
-	endorsedKeys, err := s.makeEndorsedKeys(sku, certs)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "could not make endorsed key: %s", err)
-	}
-
-	log.Println("[CreateKeyAndCertRequest] Finished")
-
-	return &pbp.CreateKeyAndCertResponse{
-		Keys: endorsedKeys,
 	}, nil
 }
 
@@ -517,218 +470,4 @@ func (s *server) initializeSKU(skuName string) error {
 		seHandle: seHandle,
 	}
 	return nil
-}
-
-func buildCertWithSerial(template *x509.Certificate, skuSerialNumber string) (*x509.Certificate, error) {
-	cert := &x509.Certificate{
-		Subject: pkix.Name{
-			SerialNumber: skuSerialNumber,
-		},
-		// other fields...
-		Issuer:                template.Issuer,
-		SerialNumber:          template.SerialNumber,
-		NotBefore:             template.NotBefore,
-		NotAfter:              template.NotAfter,
-		BasicConstraintsValid: template.BasicConstraintsValid, //true,
-		IsCA:                  template.IsCA,                  //false,
-		MaxPathLenZero:        template.MaxPathLenZero,        //false,
-		KeyUsage:              template.KeyUsage,
-		IssuingCertificateURL: template.IssuingCertificateURL,
-		ExtraExtensions:       template.ExtraExtensions,
-		UnknownExtKeyUsage:    template.UnknownExtKeyUsage,
-	}
-	return cert, nil
-}
-
-// getSigningParams returns SigningParams from skus
-func (s *server) getSigningParams(sku *skuState, subjectSerialNumber string) ([]se.SigningParams, error) {
-	var keyParams any
-	var signParams []se.SigningParams
-
-	wrap := se.WrappingMechanismNone
-
-	wstr, err := sku.config.GetAttribute(skucfg.AttrNameWrappingMechanism)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "could not get wrapping method: %s", err)
-	}
-	wmech := skucfg.WrappingMechanism(wstr)
-	switch wmech {
-	case skucfg.WrappingMechanismAESKWP:
-		wrap = se.WrappingMechanismAESKWP
-	case skucfg.WrappingMechanismAESGCM:
-		wrap = se.WrappingMechanismAESGCM
-	default:
-		return nil, status.Errorf(codes.Internal, "invalid wrapping method: %s", wmech)
-	}
-
-	// Cert serial number is 10 bytes length positive number
-	CertSerialNumbers := make([]*big.Int, 0)
-	for i, key := range sku.config.Keys {
-		serialNumber, err := sku.seHandle.GenerateRandom(EKCertSerialNumberSize)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "could not generate random data: %v", err)
-		}
-
-		// The serial number MUST be a positive integer.
-		serialNumber[0] &= 0x7F
-		// In case of leading zero set the msb to "1".
-		if serialNumber[0] == 0 {
-			serialNumber[0] = 1
-		}
-		CertSerialNumber := big.NewInt(0)
-		CertSerialNumber.SetBytes(serialNumber)
-		CertSerialNumbers = append(CertSerialNumbers, CertSerialNumber)
-
-		log.Printf("getSigningParams key =%q", key)
-		switch key.Name {
-		case skucfg.RSA2048:
-			keyParams = se.RSAParams{key.Size, int(big.NewInt(0).SetBytes(key.Exp).Uint64())}
-		case skucfg.RSA3072:
-			keyParams = se.RSAParams{key.Size, int(big.NewInt(0).SetBytes(key.Exp).Uint64())}
-		case skucfg.RSA4096:
-			keyParams = se.RSAParams{key.Size, int(big.NewInt(0).SetBytes(key.Exp).Uint64())}
-		case skucfg.Secp256r1:
-			keyParams = elliptic.P256()
-		case skucfg.Secp384r1:
-			keyParams = elliptic.P384()
-		default:
-			return nil, status.Errorf(codes.Unimplemented, "unsupported key")
-		}
-
-		// Load from SKU configuration blob as this certificate is
-		// generated at SKU creation time.
-		template, err := s.loader.LoadTemplateFromFile(s.configDir, sku.config.CertTemplates[i].Path)
-		if err != nil {
-			return nil, status.Errorf(codes.OutOfRange, "could not retrieve cert template for device: %v", err)
-		}
-
-		template.SerialNumber = CertSerialNumbers[i]
-		template.NotBefore = time.Now()
-		if subjectSerialNumber != "" {
-			template.NotAfter = time.Now().AddDate(80, 0, 0)
-		} else {
-			template.NotAfter = time.Now().AddDate(20, 0, 0)
-		}
-
-		rootCAPath := ""
-		for _, cert := range sku.config.Certs {
-			if cert.Name == "RootCA" {
-				rootCAPath = cert.Path
-				break
-			}
-		}
-		if rootCAPath == "" {
-			return nil, status.Errorf(codes.Internal, "could not find root CA certificate")
-		}
-
-		issuingCertificateURL, err := certloader.UpdateIssuingCertificateURL(template.IssuingCertificateURL[0], rootCAPath)
-		if err != nil {
-			return nil, err
-		}
-
-		template.IssuingCertificateURL = []string{
-			issuingCertificateURL,
-		}
-
-		subjectAltName, err := certloader.BuildSubjectAltName(sku.config.CertTemplateSan)
-		if err != nil {
-			return nil, err
-		}
-		template.ExtraExtensions = []pkix.Extension{
-			subjectAltName,
-		}
-
-		cert, err := buildCertWithSerial(template, subjectSerialNumber)
-		if err != nil {
-			return nil, err
-		}
-		signParam := se.SigningParams{
-			Template:  cert,
-			KeyParams: keyParams,
-			Wrap:      wrap,
-		}
-		signParams = append(signParams, signParam)
-	}
-	return signParams, nil
-}
-
-// ecKeyNameFromInt returns the ec curve name
-func ecKeyNameFromInt(index skucfg.KeyName) pbcommon.EllipticCurveType {
-	switch index {
-	case skucfg.Secp256r1:
-		return pbcommon.EllipticCurveType_ELLIPTIC_CURVE_TYPE_NIST_P256
-	case skucfg.Secp384r1:
-		return pbcommon.EllipticCurveType_ELLIPTIC_CURVE_TYPE_NIST_P384
-	default:
-		return pbcommon.EllipticCurveType_ELLIPTIC_CURVE_TYPE_UNSPECIFIED
-	}
-}
-
-// makeEndorsedKeys returns list of endorse keys
-func (s *server) makeEndorsedKeys(sku *skuState, certs []se.CertInfo) ([]*pbp.EndorsedKey, error) {
-	var endorsedKey *pbp.EndorsedKey
-	var endorsedKeys []*pbp.EndorsedKey
-	endorsedKeys = make([]*pbp.EndorsedKey, 0, len(endorsedKeys))
-
-	mode := pbw.WrappingMode(0)
-
-	wstr, err := sku.config.GetAttribute(skucfg.AttrNameWrappingMechanism)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "could not get wrapping method: %s", err)
-	}
-	wmech := skucfg.WrappingMechanism(wstr)
-	switch wmech {
-	case skucfg.WrappingMechanismAESKWP:
-		mode = pbw.WrappingMode_WRAPPING_MODE_AES_KWP
-	case skucfg.WrappingMechanismAESGCM:
-		mode = pbw.WrappingMode_WRAPPING_MODE_AES_GCM
-	default:
-		return nil, status.Errorf(codes.Internal, "invalid wrapping method: %s", wmech)
-	}
-
-	for i, cert := range certs {
-		key := sku.config.Keys[i]
-		switch {
-		case key.Type == "RSA":
-			endorsedKey = &pbp.EndorsedKey{
-				Cert: &pbc.Certificate{Blob: cert.Cert},
-				WrappedKey: &pbw.WrappedKey{
-					Mode:    mode,
-					Payload: cert.WrappedKey,
-					KeyFormat: &pbw.WrappedKey_RsaSsaPcks1{
-						&pbr.RsaSsaPkcs1KeyFormat{
-							Params: &pbr.RsaSsaPkcs1Params{
-								HashType: key.Hash,
-							},
-							ModulusSizeInBits: uint32(key.Size),
-							PublicExponent:    key.Exp,
-						},
-					},
-					Iv: cert.Iv,
-				},
-			}
-		case key.Type == "ECC":
-			endorsedKey = &pbp.EndorsedKey{
-				Cert: &pbc.Certificate{Blob: cert.Cert},
-				WrappedKey: &pbw.WrappedKey{
-					Mode:    mode,
-					Payload: cert.WrappedKey,
-					KeyFormat: &pbw.WrappedKey_Ecdsa{
-						&pbe.EcdsaKeyFormat{
-							Params: &pbe.EcdsaParams{
-								HashType: key.Hash,
-								Curve:    ecKeyNameFromInt(key.Name),
-								Encoding: pbe.EcdsaSignatureEncoding_ECDSA_SIGNATURE_ENCODING_IEEE_P1363,
-							},
-						},
-					},
-					Iv: cert.Iv,
-				},
-			}
-		default:
-			return nil, status.Errorf(codes.Internal, "unsupported key type")
-		}
-		endorsedKeys = append(endorsedKeys, endorsedKey)
-	}
-	return endorsedKeys, nil
 }

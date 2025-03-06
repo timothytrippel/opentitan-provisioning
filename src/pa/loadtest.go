@@ -118,25 +118,6 @@ func (c *clientTask) setup(ctx context.Context, skuName string) error {
 // service.
 type callFunc func(context.Context, int, string, *clientTask)
 
-// Executes the CreateKeyAndCertRequest call for a `numCalls` total and
-// produces a `callResult` which is sent to the `clientTask.results` channel.
-func testTPMCreateKeyAndCertRequest(ctx context.Context, numCalls int, skuName string, c *clientTask) {
-	// Prepare request and auth token.
-	md := metadata.Pairs("user_id", strconv.Itoa(c.id), "authorization", c.auth_token)
-	client_ctx := metadata.NewOutgoingContext(ctx, md)
-	request := &pbp.CreateKeyAndCertRequest{Sku: skuName}
-
-	// Send request to PA.
-	for i := 0; i < numCalls; i++ {
-		_, err := c.client.CreateKeyAndCert(client_ctx, request)
-		if err != nil {
-			log.Printf("error: client id: %d, error: %v", c.id, err)
-		}
-		c.results <- &callResult{err: err}
-		time.Sleep(c.delayPerCall)
-	}
-}
-
 // Executes the DeriveSymmetricKeys call for a `numCalls` total and
 // produces a `callResult` which is sent to the `clientTask.results` channel.
 func testOTDeriveSymmetricKeys(ctx context.Context, numCalls int, skuName string, c *clientTask) {
@@ -352,11 +333,6 @@ func main() {
 		testName string
 		testFunc callFunc
 	}{
-		{
-			skuName:  "tpm_1",
-			testName: "TPM:CreateKeyAndCertRequest",
-			testFunc: testTPMCreateKeyAndCertRequest,
-		},
 		{
 			skuName:  "sival",
 			testName: "OT:DeriveSymmetricKeys",

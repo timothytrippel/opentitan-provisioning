@@ -12,7 +12,6 @@ source "${CONFIG_DIR}/env/spm.env"
 SKU_CONFIG_FILES=(
   "${CONFIG_DIR}/spm/sku/hsm_spm_init.sh"
   "${CONFIG_DIR}/spm/sku/sival/hsm_sku_init.sh"
-  "${CONFIG_DIR}/spm/sku/tpm_1/hsm_sku_init.sh"
 )
 
 # Check token initialization dependencies.

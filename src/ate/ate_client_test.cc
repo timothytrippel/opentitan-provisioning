@@ -20,8 +20,6 @@ namespace provisioning {
 namespace ate {
 namespace {
 
-using pa::CreateKeyAndCertRequest;
-using pa::CreateKeyAndCertResponse;
 using pa::DeriveSymmetricKeysRequest;
 using pa::DeriveSymmetricKeysResponse;
 using pa::EndorseCertsRequest;
@@ -49,29 +47,6 @@ class AteTest : public ::testing::Test {
   MockProvisioningApplianceServiceStub* pa_service_;
   std::unique_ptr<AteClient> ate_;
 };
-
-TEST_F(AteTest, CreateKeyAndCertCallsServer) {
-  // Response that will be sent back for CreateKeyAndCert.
-  auto response = ParseTextProto<CreateKeyAndCertResponse>(R"pb(
-    keys: { cert: { blob: "fake-cert-blob" } })pb");
-
-  // Expect CreateKeyAndCert to be called.
-  // The 2nd arg is expected to be a protobuf with the `sku` field.
-  // We'll return the `response` struct and a status of `OK`.
-  EXPECT_CALL(*pa_service_, CreateKeyAndCert(_, EqualsProto(R"pb(
-                                               sku: "abc123"
-                                             )pb"),
-                                             _))
-      .WillOnce(DoAll(SetArgPointee<2>(response), Return(grpc::Status::OK)));
-
-  // Call the AteClient and verify it returns OK with the expected response.
-  CreateKeyAndCertResponse result;
-  uint8_t serial[] = {};
-  EXPECT_THAT(
-      ate_->CreateKeyAndCert("abc123", serial, sizeof(serial), &result).ok(),
-      IsTrue());
-  EXPECT_THAT(result, EqualsProto(response));
-}
 
 TEST_F(AteTest, EndorseCerts) {
   // Response that will be sent back for EndorseCerts.

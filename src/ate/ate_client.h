@@ -62,12 +62,6 @@ class AteClient {
   // Calls the server's CloseSession method and returns its reply.
   grpc::Status CloseSession();
 
-  // Calls the server's CreateKeyAndCert method and returns its reply.
-  grpc::Status CreateKeyAndCert(const std::string& sku,
-                                const void* serial_number,
-                                const size_t serial_number_size,
-                                pa::CreateKeyAndCertResponse* reply);
-
   // Calls the server's EndorseCerts method and returns its reply.
   grpc::Status EndorseCerts(pa::EndorseCertsRequest& request,
                             pa::EndorseCertsResponse* reply);
