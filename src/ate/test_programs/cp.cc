@@ -165,17 +165,9 @@ int main(int argc, char **argv) {
     return -1;
   }
 
-  // Init session with DUT.
-  auto dut = DutLib::Create();
-  absl::Status dut_status =
-      dut->DutInit(absl::GetFlag(FLAGS_fpga), fpga_bitstream_path);
-  if (!dut_status.ok()) {
-    LOG(ERROR) << "DutInit failed with " << dut_status.code() << ": "
-               << dut_status.message() << std::endl;
-    return -1;
-  }
-
-  // Load and execute CP SRAM provisioning binary.
+  // Init session with FPGA DUT and load CP provisioning firmware.
+  auto dut = DutLib::Create(absl::GetFlag(FLAGS_fpga));
+  dut->DutFpgaLoadBitstream(fpga_bitstream_path);
   dut->DutLoadSramElf(openocd_path, sram_elf_path);
 
   // Close session with PA.

@@ -16,18 +16,18 @@ class DutLib {
  private:
   void* transport_;
 
- public:
-  DutLib(){};
+  // Force users to call `Create` factory method.
+  DutLib(void* transport) : transport_(transport){};
 
+ public:
   // Forbids copies or assignments of DutLib.
   DutLib(const DutLib&) = delete;
   DutLib& operator=(const DutLib&) = delete;
 
-  static std::unique_ptr<DutLib> Create(void);
+  static std::unique_ptr<DutLib> Create(const std::string& fpga);
 
   // Calls opentitanlib backend transport init for FPGA.
-  absl::Status DutInit(const std::string& fpga,
-                       const std::string& fpga_bitstream);
+  void DutFpgaLoadBitstream(const std::string& fpga_bitstream);
 
   // Calls opentitanlib test util to load an SRAM ELF into the DUT over JTAG.
   void DutLoadSramElf(const std::string& openocd, const std::string& elf);
