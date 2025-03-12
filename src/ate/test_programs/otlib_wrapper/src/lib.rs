@@ -22,10 +22,7 @@ use opentitanlib::test_utils::load_sram_program::{
 };
 
 #[no_mangle]
-pub extern "C" fn OtLibFpgaInit(
-    fpga: *mut c_char,
-    fpga_bitstream: *mut c_char,
-) -> *const TransportWrapper {
+pub extern "C" fn OtLibFpgaTransportInit(fpga: *mut c_char) -> *const TransportWrapper {
     // Unsupported backends.
     let empty_proxy_opts = ProxyOpts {
         proxy: None,
@@ -48,9 +45,6 @@ pub extern "C" fn OtLibFpgaInit(
     // SAFETY: The FPGA string must be defined by the caller and be valid.
     let fpga_cstr = unsafe { CStr::from_ptr(fpga) };
     let fpga_in = fpga_cstr.to_str().unwrap();
-    // SAFETY: The FPGA bitstream path string must be defined by the caller and be a valid path.
-    let fpga_bitstream_cstr = unsafe { CStr::from_ptr(fpga_bitstream) };
-    let fpga_bitstream_in = fpga_bitstream_cstr.to_str().unwrap();
 
     // Only the hyper310 backend is currently supported.
     let backend_opts = backend::BackendOpts {
@@ -72,6 +66,21 @@ pub extern "C" fn OtLibFpgaInit(
     let transport = backend::create(&backend_opts).unwrap();
     transport.apply_default_configuration(None).unwrap();
 
+    Box::into_raw(Box::new(transport))
+}
+
+#[no_mangle]
+pub extern "C" fn OtLibFpgaLoadBitstream(
+    transport: *const TransportWrapper,
+    fpga_bitstream: *mut c_char,
+) {
+    // Rebind transport as a ref to the pointed-to object.
+    let transport: &TransportWrapper = unsafe { &*transport };
+
+    // SAFETY: The FPGA bitstream path string must be defined by the caller and be a valid path.
+    let fpga_bitstream_cstr = unsafe { CStr::from_ptr(fpga_bitstream) };
+    let fpga_bitstream_in = fpga_bitstream_cstr.to_str().unwrap();
+
     // Load bitstream.
     let load_bitstream = LoadBitstream {
         clear_bitstream: true,
@@ -80,8 +89,6 @@ pub extern "C" fn OtLibFpgaInit(
         rom_timeout: Duration::from_secs(2),
     };
     InitializeTest::print_result("load_bitstream", load_bitstream.init(&transport)).unwrap();
-
-    Box::into_raw(Box::new(transport))
 }
 
 #[no_mangle]

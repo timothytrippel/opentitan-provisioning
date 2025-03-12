@@ -13,19 +13,19 @@ namespace provisioning {
 namespace test_programs {
 
 extern "C" {
-void* OtLibFpgaInit(const char* fpga, const char* fpga_bitstream);
-void* OtLibLoadSramElf(void* transport, const char* openocd, const char* elf);
+void* OtLibFpgaTransportInit(const char* fpga);
+void OtLibFpgaLoadBitstream(void* transport, const char* fpga_bitstream);
+void OtLibLoadSramElf(void* transport, const char* openocd, const char* elf);
 }
 
-std::unique_ptr<DutLib> DutLib::Create(void) {
-  return absl::make_unique<DutLib>();
+std::unique_ptr<DutLib> DutLib::Create(const std::string& fpga) {
+  return absl::WrapUnique<DutLib>(
+      new DutLib(OtLibFpgaTransportInit(fpga.c_str())));
 }
 
-absl::Status DutLib::DutInit(const std::string& fpga,
-                             const std::string& fpga_bitstream) {
-  LOG(INFO) << "in DutLib::DutInit";
-  transport_ = OtLibFpgaInit(fpga.c_str(), fpga_bitstream.c_str());
-  return absl::OkStatus();
+void DutLib::DutFpgaLoadBitstream(const std::string& fpga_bitstream) {
+  LOG(INFO) << "in DutLib::DutFpgaLoadBitstream";
+  OtLibFpgaLoadBitstream(transport_, fpga_bitstream.c_str());
 }
 
 void DutLib::DutLoadSramElf(const std::string& openocd,
