@@ -8,6 +8,10 @@ load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 _MISC_LINTERS_VERSION = "20240820_01"
 _BAZEL_RELEASE_VERSION = "0.0.3"
 _BAZEL_SKYLIB_VERSION = "1.5.0"
+
+# When updating the lowrisc_opentitan repo, be sure to rebuild the builtstream
+# files too by following the instructions in
+# `third_party/lowrisc/ot_bitstreams/README.md`.
 _OPENTITAN_VERSION = "Earlgrey-A2-Provisioning-RC3"
 
 def lowrisc_repos(misc_linters = None, bazel_release = None, bazel_skylib = None, opentitan = None):
