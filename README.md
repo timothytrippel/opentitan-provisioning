@@ -12,6 +12,14 @@ Currently, Ubuntu 22.04LTS is the only supported development environment. There
 are [build container](docs/containers.md#building-inside-the-build-container)
 instructions available for other OS distributions.
 
+### Git LFS
+
+This repo uses Git LFS to track larger files, such as FPGA bitstreams and DUT
+provisioning firmware binaries. To properly clone this repo, ensure you have
+Git LFS installed by following these [instructions](https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage).
+See the Git LFS [collaboration](https://docs.github.com/en/repositories/working-with-files/managing-large-files/collaboration-with-git-large-file-storage)
+details on why this is necessary.
+
 ### Install Dependencies
 
 Install dependencies via `setup.sh`. This will run `apt` to install system-level
