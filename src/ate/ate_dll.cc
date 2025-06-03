@@ -436,9 +436,12 @@ DLLEXPORT int EndorseCerts(ate_client_ptr client, const char *sku,
                  << req_params.key_label_size << " bytes.";
       return static_cast<int>(absl::StatusCode::kInvalidArgument);
     }
-    signing_params->set_key_label(
-        std::string(req_params.key_label,
-                    req_params.key_label + req_params.key_label_size));
+    std::string cert_label(req_params.key_label, req_params.key_label_size);
+    if (cert_label = "UDS") {
+      signing_params->set_key_label("SigningKey/Dice/v0");
+    } else {
+      signing_params->set_key_label("SigningKey/Ext/v0");
+    }
 
     // Only ECDSA keys are supported at this time.
     auto key = signing_params->mutable_ecdsa_params();
@@ -470,10 +473,8 @@ DLLEXPORT int EndorseCerts(ate_client_ptr client, const char *sku,
     }
   }
 
-  req.set_diversifier(std::string(diversifier->raw,
-                                  diversifier->raw + sizeof(diversifier->raw)));
-  req.set_signature(
-      std::string(signature->raw, signature->raw + sizeof(signature->raw)));
+  req.set_diversifier(diversifier->raw, kDiversificationStringSize);
+  req.set_signature(signature->raw, kWasHmacSignatureSize);
 
   AteClient *ate = reinterpret_cast<AteClient *>(client);
   pa::EndorseCertsResponse resp;
