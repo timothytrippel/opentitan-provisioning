@@ -18,6 +18,7 @@
 #include "absl/log/log.h"
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
+#include "absl/strings/str_format.h"
 #include "absl/strings/str_replace.h"
 #include "external/lowrisc_opentitan/sw/device/lib/dif/dif_lc_ctrl.h"
 #include "src/ate/ate_api.h"
@@ -199,7 +200,7 @@ int main(int argc, char **argv) {
   auto dut = DutLib::Create(absl::GetFlag(FLAGS_fpga));
 
   // Regenerate the test tokens.
-  derive_token_params_t params[] = {
+  derive_token_params_t test_tokens_params[] = {
       {
           // Test Unlock Token
           .seed = kTokenSeedSecurityLow,
@@ -215,18 +216,20 @@ int main(int argc, char **argv) {
           .diversifier = {0},
       },
   };
-  if (!SetDiversificationString(params[0].diversifier, "test_unlock")) {
+  if (!SetDiversificationString(test_tokens_params[0].diversifier,
+                                "test_unlock")) {
     LOG(ERROR) << "Failed to set diversifier for test_unlock.";
     return -1;
   }
-  if (!SetDiversificationString(params[1].diversifier, "test_exit")) {
+  if (!SetDiversificationString(test_tokens_params[1].diversifier,
+                                "test_exit")) {
     LOG(ERROR) << "Failed to set diversifier for test_exit.";
     return -1;
   }
   constexpr size_t kNumTokens = 2;
   token_t tokens[kNumTokens];
   if (DeriveTokens(ate_client, absl::GetFlag(FLAGS_sku).c_str(),
-                   /*count=*/kNumTokens, params, tokens) != 0) {
+                   /*count=*/kNumTokens, test_tokens_params, tokens) != 0) {
     LOG(ERROR) << "DeriveTokens failed.";
     return -1;
   }
@@ -287,8 +290,7 @@ int main(int argc, char **argv) {
                            ca_serial_numbers_spi_frame.cursor,
                            /*timeout_ms=*/1000);
 
-  // Receive the TBS certs from the DUT and endorse them with the PA/SPM.
-  size_t num_objs = 0;
+  // Receive the TBS certs and other provisioning data from the DUT.
   perso_blob_t perso_blob_from_dut = {
       .num_objects = 0,
       .next_free = kPersoBlobMaxSize,
@@ -298,7 +300,49 @@ int main(int argc, char **argv) {
       /*quiet=*/true, /*timeout_ms=*/5000, &perso_blob_from_dut.num_objects,
       &perso_blob_from_dut.next_free, perso_blob_from_dut.body);
 
-  // TODO(timothytrippel): add perso remaining execution steps
+  // Unpack the provisioning data (TBS certs, device ID, dev seeds, etc.) from
+  // the perso blob.
+  constexpr size_t kNumTbsCerts = 10;
+  device_id_bytes_t device_id;
+  endorse_cert_signature_t tbs_was_hmac = {.raw = {0}};
+  size_t num_tbs_certs = kNumTbsCerts;
+  endorse_cert_request_t endorse_certs_requests[kNumTbsCerts];
+  device_dev_seed_t dev_seeds;
+  size_t dev_seeds_count;
+  if (UnpackPersoBlob(&perso_blob_from_dut, &device_id, &tbs_was_hmac,
+                      &num_tbs_certs, endorse_certs_requests, &dev_seeds,
+                      &dev_seeds_count) != 0) {
+    LOG(ERROR) << "Failed to unpack the perso blob from the DUT.";
+    return -1;
+  }
+
+  // Log the device ID and number of TBS certs to be endorsed.
+  uint32_t *device_id_words = reinterpret_cast<uint32_t *>(device_id.raw);
+  LOG(INFO) << absl::StrFormat("Device ID: 0x%08x%08x%08x%08x%08x%08x%08x%08x",
+                               device_id_words[7], device_id_words[6],
+                               device_id_words[5], device_id_words[4],
+                               device_id_words[3], device_id_words[2],
+                               device_id_words[1], device_id_words[0]);
+  LOG(INFO) << "Number of TBS certs to endorse: " << num_tbs_certs;
+
+  // Endorse the TBS certs with the PA/SPM.
+  // TODO(timothytrippel): Set diversifier to "was" || CP device ID.
+  diversifier_bytes_t was_diversifier = {0};
+  if (!SetDiversificationString(was_diversifier.raw, "was")) {
+    LOG(ERROR) << "Failed to set diversifier for WAS.";
+    return -1;
+  }
+  endorse_cert_response_t endorse_certs_responses[kNumTbsCerts];
+  if (EndorseCerts(ate_client, absl::GetFlag(FLAGS_sku).c_str(),
+                   &was_diversifier, &tbs_was_hmac, num_tbs_certs,
+                   endorse_certs_requests, endorse_certs_responses) != 0) {
+    LOG(ERROR) << "Failed to endorse certs.";
+    return -1;
+  }
+
+  // TODO(timothytrippel): Send the endorsed certs back to the device.
+  // TODO(timothytrippel): Check the cert chains validate.
+  // TODO(timothytrippel): Register the device.
 
   // Close session with PA.
   if (CloseSession(ate_client) != 0) {

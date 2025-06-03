@@ -18,6 +18,7 @@
 #include "absl/log/log.h"
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
+#include "absl/strings/str_format.h"
 #include "absl/strings/str_replace.h"
 #include "src/ate/ate_api.h"
 #include "src/ate/test_programs/dut_lib/dut_lib.h"
@@ -173,6 +174,7 @@ int main(int argc, char **argv) {
     return -1;
   }
 
+  // Derive the WAS, test unlock, and test exit tokens.
   derive_token_params_t params[] = {
       {
           // WAS
@@ -196,7 +198,7 @@ int main(int argc, char **argv) {
           .diversifier = {0},
       },
   };
-  // TODO(moidx): Set diversifier to "was" || CP device ID.
+  // TODO(timothytrippel): Set diversifier to "was" || CP device ID.
   if (!SetDiversificationString(params[0].diversifier, "was")) {
     LOG(ERROR) << "Failed to set diversifier for WAS.";
     return -1;
@@ -209,7 +211,6 @@ int main(int argc, char **argv) {
     LOG(ERROR) << "Failed to set diversifier for test_exit.";
     return -1;
   }
-
   token_t tokens[3];
   if (DeriveTokens(ate_client, absl::GetFlag(FLAGS_sku).c_str(), /*count=*/3,
                    params, tokens) != 0) {
@@ -217,6 +218,7 @@ int main(int argc, char **argv) {
     return -1;
   }
 
+  // Convert the tokens to a JSON payload to inject during CP.
   dut_spi_frame_t spi_frame;
   if (TokensToJson(&tokens[0], &tokens[1], &tokens[2], &spi_frame) != 0) {
     LOG(ERROR) << "TokensToJson failed.";
