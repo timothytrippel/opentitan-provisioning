@@ -426,8 +426,7 @@ DLLEXPORT int EndorseCerts(ate_client_ptr client, const char *sku,
       return static_cast<int>(absl::StatusCode::kInvalidArgument);
     }
 
-    bundle->set_tbs(std::string(req_params.tbs,
-                                req_params.tbs + sizeof(req_params.tbs_size)));
+    bundle->set_tbs(req_params.tbs, req_params.tbs_size);
 
     auto signing_params = bundle->mutable_key_params();
 
