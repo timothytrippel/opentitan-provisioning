@@ -11,6 +11,7 @@ import (
 
 	dpb "github.com/lowRISC/opentitan-provisioning/src/proto/device_id_go_pb"
 	"github.com/lowRISC/opentitan-provisioning/src/proto/validators"
+	"github.com/lowRISC/opentitan-provisioning/src/utils"
 )
 
 type DeviceIDField struct {
@@ -56,20 +57,12 @@ func FromRawBytes(raw []byte) (*dpb.DeviceId, error) {
 	return deviceId, nil
 }
 
-// Reverses the byte slice in place.
-// TODO(#155): Migrate to `slices.Reverse` in Go >= 1.21.
-func reverse(b []byte) {
-	for i, j := 0, len(b)-1; i < j; i, j = i+1, j-1 {
-		b[i], b[j] = b[j], b[i]
-	}
-}
-
 // FromHex converts a hex string to a DeviceId object.
 // It expects the hex string to be in little-endian format and of length 64
 // characters (32 bytes).
 func FromHex(h string) (*dpb.DeviceId, error) {
 	raw, err := hex.DecodeString(h)
-	reverse(raw)
+	utils.Reverse(raw)
 	if err != nil {
 		return nil, fmt.Errorf("error decoding hex string: %v", err)
 	}
@@ -101,7 +94,7 @@ func DeviceIDToHex(d *dpb.DeviceId) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("error converting device ID to raw bytes: %v", err)
 	}
-	reverse(raw)
+	utils.Reverse(raw)
 	return hex.EncodeToString(raw), nil
 }
 
@@ -124,6 +117,6 @@ func HardwareOriginToHex(h *dpb.HardwareOrigin) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("error converting hardware origin to raw bytes: %v", err)
 	}
-	reverse(raw)
+	utils.Reverse(raw)
 	return hex.EncodeToString(raw), nil
 }
