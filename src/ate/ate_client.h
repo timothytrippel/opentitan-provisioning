@@ -70,6 +70,10 @@ class AteClient {
   grpc::Status DeriveTokens(pa::DeriveTokensRequest& request,
                             pa::DeriveTokensResponse* reply);
 
+  // Calls the server's GetCaSerialNumbers method and returns its reply.
+  grpc::Status GetCaSerialNumbers(pa::GetCaSerialNumbersRequest& request,
+                                  pa::GetCaSerialNumbersResponse* reply);
+
   // Calls the server's RegisterDevice method and returns its reply.
   grpc::Status RegisterDevice(pa::RegistrationRequest& request,
                               pa::RegistrationResponse* reply);

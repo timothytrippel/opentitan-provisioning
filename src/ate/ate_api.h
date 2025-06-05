@@ -362,16 +362,7 @@ typedef struct wrapped_seed {
  * CA serial number.
  */
 typedef struct ca_serial_number {
-  /**
-   * CA serial number data.
-   *
-   * Note: CA serial numbers are 160-bits, or 20 bytes, in size. However,
-   * protobuf does not have a uint8 type, such that we can define a message
-   * field of "repeated uint8". Protobuf only has a bytes type, and defining a
-   * message field of type "bytes" will not serialize to {"a", "b", ...}, but
-   * rather to {"ab"} which is not what the provisioning firmware will expect.
-   **/
-  uint32_t data[kCaSerialNumberSize];
+  uint8_t data[kCaSerialNumberSize];
 } ca_serial_number_t;
 
 /**
@@ -463,6 +454,23 @@ DLLEXPORT int GenerateTokens(ate_client_ptr client, const char* sku,
                              size_t count,
                              const generate_token_params_t* params,
                              token_t* tokens, wrapped_seed_t* seeds);
+
+/**
+ * Gets the CA serial numbers.
+ *
+ * This function retrieves the CA serial numbers from the PA/SPM. The caller
+ * should allocate enough memory to store the serial numbers.
+ *
+ * @param client A client instance.
+ * @param sku The SKU of the product to generate the keys for.
+ * @param count The number of serial numbers to retrieve.
+ * @param labels The lable strings of the certs to retrieve. Size `count`.
+ * @param[out] serial_numbers The generated serial_numbers. Size `count`.
+ * @return The result of the operation.
+ */
+DLLEXPORT int GetCaSerialNumbers(ate_client_ptr client, const char* sku,
+                                 size_t count, const char** labels,
+                                 ca_serial_number_t* serial_numbers);
 
 /**
  * Endorse certificates.

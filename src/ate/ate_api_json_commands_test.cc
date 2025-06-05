@@ -87,7 +87,7 @@ TEST_F(AteJsonTest, DeviceIdFromJson) {
   memcpy(frame.payload, command.data(), command.size());
   frame.cursor = command.size();
 
-  device_id_bytes_t device_id;
+  device_id_bytes_t device_id = {0};
   EXPECT_EQ(DeviceIdFromJson(&frame, &device_id), 0);
   EXPECT_THAT(
       device_id.raw,
@@ -133,7 +133,9 @@ TEST_F(AteJsonTest, CaSerialNumbers) {
   ca_serial_number_t dice_ca_sn = {0};
   ca_serial_number_t aux_ca_sn = {0};
   dice_ca_sn.data[0] = 65;
+  dice_ca_sn.data[9] = 12;
   aux_ca_sn.data[0] = 123;
+  aux_ca_sn.data[19] = 255;
 
   dut_spi_frame_t frame;
   EXPECT_EQ(CaSerialNumbersToJson(&dice_ca_sn, &aux_ca_sn, &frame), 0);
@@ -160,7 +162,7 @@ TEST_F(AteJsonTest, CaSerialNumbers) {
                 dice_auth_key_key_id: 0
                 dice_auth_key_key_id: 0
                 dice_auth_key_key_id: 0
-                dice_auth_key_key_id: 0
+                dice_auth_key_key_id: 12
                 dice_auth_key_key_id: 0
                 dice_auth_key_key_id: 0
                 dice_auth_key_key_id: 0
@@ -190,7 +192,7 @@ TEST_F(AteJsonTest, CaSerialNumbers) {
                 ext_auth_key_key_id: 0
                 ext_auth_key_key_id: 0
                 ext_auth_key_key_id: 0
-                ext_auth_key_key_id: 0
+                ext_auth_key_key_id: 255
               )pb"));
 }
 

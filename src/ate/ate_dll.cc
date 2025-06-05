@@ -401,6 +401,40 @@ DLLEXPORT int GenerateTokens(ate_client_ptr client, const char *sku,
   return TokensCopy(count, resp, tokens, seeds);
 }
 
+DLLEXPORT int GetCaSerialNumbers(ate_client_ptr client, const char *sku,
+                                 size_t count, const char **labels,
+                                 ca_serial_number_t *serial_numbers) {
+  DLOG(INFO) << "GetCaSerialNumbers";
+
+  if (sku == nullptr || labels == nullptr || count == 0 ||
+      serial_numbers == nullptr) {
+    return static_cast<int>(absl::StatusCode::kInvalidArgument);
+  }
+
+  pa::GetCaSerialNumbersRequest req;
+  req.set_sku(sku);
+  for (size_t i = 0; i < count; ++i) {
+    req.add_cert_labels(labels[i]);
+  }
+
+  AteClient *ate = reinterpret_cast<AteClient *>(client);
+
+  pa::GetCaSerialNumbersResponse resp;
+  auto status = ate->GetCaSerialNumbers(req, &resp);
+  if (!status.ok()) {
+    LOG(ERROR) << "GetCaSerialNumbers failed with " << status.error_code()
+               << ": " << status.error_message();
+    return static_cast<int>(status.error_code());
+  }
+
+  for (size_t i = 0; i < count; ++i) {
+    memcpy(serial_numbers[i].data, resp.serial_numbers(i).data(),
+           kCaSerialNumberSize);
+  }
+
+  return 0;
+}
+
 DLLEXPORT int EndorseCerts(ate_client_ptr client, const char *sku,
                            const diversifier_bytes_t *diversifier,
                            const endorse_cert_signature_t *signature,
