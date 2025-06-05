@@ -237,12 +237,19 @@ int main(int argc, char **argv) {
   }
 
   // Generate CA serial numbers.
-  // TODO(timothytrippel): retrieve the serial numbers from the CA when #186
-  // merges.
-  ca_serial_number_t dice_ca_sn = {0};
-  ca_serial_number_t aux_ca_sn = {0};
+  constexpr size_t kNumIcas = 1;
+  const char *kIcaCertLabels[] = {"dice-ica"};
+  ca_serial_number_t serial_numbers[kNumIcas];
+  if (GetCaSerialNumbers(ate_client, absl::GetFlag(FLAGS_sku).c_str(),
+                         /*count=*/kNumIcas, kIcaCertLabels,
+                         serial_numbers) != 0) {
+    LOG(ERROR) << "GetCaSerialNumbers failed.";
+    return -1;
+  }
+  const ca_serial_number_t *kDiceCaSn = &serial_numbers[0];
+  const ca_serial_number_t kExtCaSn = {0};
   dut_spi_frame_t ca_serial_numbers_spi_frame;
-  if (CaSerialNumbersToJson(&dice_ca_sn, &aux_ca_sn,
+  if (CaSerialNumbersToJson(kDiceCaSn, &kExtCaSn,
                             &ca_serial_numbers_spi_frame) != 0) {
     LOG(ERROR) << "CaSerialNumbersToJson failed.";
     return -1;

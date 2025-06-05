@@ -225,21 +225,9 @@ DLLEXPORT int CaSerialNumbersToJson(const ca_serial_number_t *dice_ca_sn,
     LOG(ERROR) << "Invalid auxiliary CA serial number.";
     return -1;
   }
-  const uint32_t *dice_ca_sn_ptr =
-      reinterpret_cast<const uint32_t *>(dice_ca_sn->data);
-  const uint32_t *aux_ca_sn_ptr =
-      reinterpret_cast<const uint32_t *>(aux_ca_sn->data);
   for (size_t i = 0; i < kCaSerialNumberSize; ++i) {
-    if (dice_ca_sn_ptr[i] > 255) {
-      LOG(ERROR) << "Each serial number byte must be smaller than 256.";
-      return -1;
-    }
-    if (aux_ca_sn_ptr[i] > 255) {
-      LOG(ERROR) << "Each serial number byte must be smaller than 256.";
-      return -1;
-    }
-    ca_serial_numbers_cmd.add_dice_auth_key_key_id(dice_ca_sn_ptr[i]);
-    ca_serial_numbers_cmd.add_ext_auth_key_key_id(aux_ca_sn_ptr[i]);
+    ca_serial_numbers_cmd.add_dice_auth_key_key_id(dice_ca_sn->data[i]);
+    ca_serial_numbers_cmd.add_ext_auth_key_key_id(aux_ca_sn->data[i]);
   }
 
   std::string command;
