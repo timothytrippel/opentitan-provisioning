@@ -91,6 +91,9 @@ if [ "${CONFIG_SUBDIR}" == "dev" ]; then
     # Add write permissions to directories so they can be removed by the self
     # hosted GitHub runner between test runs.
     chmod +w ${DEPLOYMENT_DIR}/softhsm2/softhsm2/bin
+    chmod +w ${DEPLOYMENT_DIR}/softhsm2/softhsm2/bin/softhsm2-dump-file
+    chmod +w ${DEPLOYMENT_DIR}/softhsm2/softhsm2/bin/softhsm2-keyconv
+    chmod +w ${DEPLOYMENT_DIR}/softhsm2/softhsm2/bin/softhsm2-util
     chmod +w ${DEPLOYMENT_DIR}/softhsm2/softhsm2/lib
     chmod +w ${DEPLOYMENT_DIR}/softhsm2/softhsm2/lib/softhsm
     chmod +w ${DEPLOYMENT_DIR}/softhsm2/softhsm2/share
