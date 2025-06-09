@@ -222,8 +222,9 @@ int main(int argc, char **argv) {
                     spi_frame.cursor,
                     /*timeout_ms=*/1000);
   dut_spi_frame_t devid_spi_frame;
-  dut->DutConsoleRx("Exporting CP device ID ...", devid_spi_frame.payload,
-                    &devid_spi_frame.cursor,
+  size_t num_spi_frames = 1;
+  dut->DutConsoleRx("Exporting CP device ID ...", &devid_spi_frame,
+                    &num_spi_frames,
                     /*quiet=*/false,
                     /*timeout_ms=*/1000);
   device_id_bytes_t device_id_bytes = {.raw = {0}};
