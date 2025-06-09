@@ -39,7 +39,17 @@ use opentitanlib::test_utils::load_sram_program::{
 };
 use opentitanlib::test_utils::rpc::ConsoleRecv;
 use opentitanlib::uart::console::{ExitStatus, UartConsole};
-use ujson_lib::provisioning_data::{ManufCpProvisioningDataOut, PersoBlob};
+use ujson_lib::provisioning_data::PersoBlob;
+
+const BUFFER_SIZE: usize = 2044;
+
+// NOTE: must match definition of dut_spi_frame_t defined in src/ate/ate_api.h
+// TODO(timothytrippel): look into using bindgen here to keep in sync
+#[repr(C)]
+pub struct DutSpiFrame {
+    pub payload: [u8; BUFFER_SIZE],
+    pub cursor: usize,
+}
 
 #[no_mangle]
 pub extern "C" fn OtLibFpgaTransportInit(fpga: *mut c_char) -> *const TransportWrapper {
@@ -264,8 +274,8 @@ fn check_console_crc(json_str: &str, crc_str: &str) -> Result<()> {
 pub extern "C" fn OtLibConsoleRx(
     transport: *const TransportWrapper,
     sync_msg: *mut c_char,
-    msg: *mut u8,
-    msg_size: *mut usize,
+    spi_frames: *mut DutSpiFrame,
+    num_frames: *mut usize,
     quiet: bool,
     timeout_ms: u64,
 ) {
@@ -316,10 +326,10 @@ pub extern "C" fn OtLibConsoleRx(
     };
 
     // Receive the payload from DUT.
-    // SAFETY: msg_size should be a valid pointer to memory allocated by the caller.
-    let msg_size = unsafe { &mut *msg_size };
+    // SAFETY: num_frames should be a valid pointer to memory allocated by the caller.
+    let num_frames = unsafe { &mut *num_frames };
     // SAFETY: msg should be a valid pointer to memory allocated by the caller.
-    let msg = unsafe { std::slice::from_raw_parts_mut(msg, *msg_size) };
+    let spi_frames = unsafe { std::slice::from_raw_parts_mut(spi_frames, *num_frames) };
     let result = console.interact(&spi_console, None, out).unwrap();
     match result {
         ExitStatus::ExitSuccess => {
@@ -329,8 +339,23 @@ pub extern "C" fn OtLibConsoleRx(
             let json_str = cap.get(1).expect("RESP_OK group").as_str();
             let crc_str = cap.get(2).expect("CRC group").as_str();
             check_console_crc(json_str, crc_str).expect("CRC check failed.");
-            msg[..json_str.len()].copy_from_slice(json_str.as_bytes());
-            *msg_size = json_str.len();
+
+            *num_frames = (json_str.len() + BUFFER_SIZE - 1) / BUFFER_SIZE;
+            for (i, spi_frame) in spi_frames.iter_mut().enumerate() {
+                if i < *num_frames {
+                    let start = i * BUFFER_SIZE;
+                    let end = (start + BUFFER_SIZE).min(json_str.len());
+                    let chunk = &json_str.as_bytes()[start..end];
+                    let chunk_len = chunk.len();
+                    spi_frame.payload[..chunk_len].copy_from_slice(chunk);
+                    spi_frame.cursor = chunk_len;
+                } else {
+                    panic!(
+                        "Not enough frames allocated to receive JSON string of length {}",
+                        json_str.len()
+                    )
+                }
+            }
         }
         ExitStatus::ExitFailure => {
             let cap = console

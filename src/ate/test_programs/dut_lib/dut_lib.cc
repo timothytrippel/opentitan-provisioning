@@ -11,6 +11,7 @@
 
 #include "absl/log/log.h"
 #include "absl/status/status.h"
+#include "src/ate/ate_api.h"
 #include "src/ate/proto/dut_commands.pb.h"
 
 namespace provisioning {
@@ -24,8 +25,9 @@ void OtLibLoadSramElf(void* transport, const char* openocd, const char* elf,
 void OtLibBootstrap(void* transport, const char* bin);
 void OtLibConsoleWaitForRx(void* transport, const char* msg,
                            uint64_t timeout_ms);
-void OtLibConsoleRx(void* transport, const char* sync_msg, uint8_t* spi_frame,
-                    size_t* spi_frame_size, bool quiet, uint64_t timeout_ms);
+void OtLibConsoleRx(void* transport, const char* sync_msg,
+                    dut_spi_frame_t* spi_frames, size_t* num_frames, bool quiet,
+                    uint64_t timeout_ms);
 void OtLibConsoleTx(void* transport, const char* sync_msg,
                     const uint8_t* spi_frame, size_t spi_frame_size,
                     uint64_t timeout_ms);
@@ -64,11 +66,11 @@ void DutLib::DutConsoleWaitForRx(const char* msg, uint64_t timeout_ms) {
   OtLibConsoleWaitForRx(transport_, msg, timeout_ms);
 }
 
-void DutLib::DutConsoleRx(const std::string& sync_msg, uint8_t* spi_frame,
-                          size_t* spi_frame_size, bool quiet,
-                          uint64_t timeout_ms) {
+void DutLib::DutConsoleRx(const std::string& sync_msg,
+                          dut_spi_frame_t* spi_frames, size_t* num_frames,
+                          bool quiet, uint64_t timeout_ms) {
   LOG(INFO) << "in DutLib::DutConsoleRx";
-  OtLibConsoleRx(transport_, sync_msg.c_str(), spi_frame, spi_frame_size, quiet,
+  OtLibConsoleRx(transport_, sync_msg.c_str(), spi_frames, num_frames, quiet,
                  timeout_ms);
 }
 

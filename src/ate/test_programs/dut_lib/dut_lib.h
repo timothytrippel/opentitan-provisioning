@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "src/ate/ate_api.h"
+
 namespace provisioning {
 namespace test_programs {
 
@@ -42,8 +44,8 @@ class DutLib {
   /**
    * Calls opentitanlib test util to receive a message over the SPI console.
    */
-  void DutConsoleRx(const std::string& sync_msg, uint8_t* spi_frame,
-                    size_t* spi_frame_size, bool quiet, uint64_t timeout_ms);
+  void DutConsoleRx(const std::string& sync_msg, dut_spi_frame_t* spi_frames,
+                    size_t* num_frames, bool quiet, uint64_t timeout_ms);
   /**
    * Calls opentitanlib test util to send a message over the SPI console.
    */
