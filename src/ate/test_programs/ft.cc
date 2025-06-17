@@ -281,7 +281,7 @@ int main(int argc, char **argv) {
                     &num_pb_spi_frames,
                     /*skip_crc_check=*/true,
                     /*quiet=*/true,
-                    /*timeout_ms=*/5000);
+                    /*timeout_ms=*/10000);
   perso_blob_t perso_blob_from_dut = {0};
   if (PersoBlobFromJson(pb_spi_frames, num_pb_spi_frames,
                         &perso_blob_from_dut)) {
