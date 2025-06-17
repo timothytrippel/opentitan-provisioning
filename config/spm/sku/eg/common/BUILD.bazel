@@ -50,7 +50,7 @@ hsm_generic_secret(
     wrapping_key = ":eg-aes-wrap-v0",
     wrapping_mechanism = select({
         "//:dev_env": "AesKeyWrap",
-        "//:prod_env": "VendorThalesAesKwp",
+        "//:prod_env": "VendorThalesAesKw",
         "//conditions:default": "AesKeyWrap",
     }),
 )
@@ -60,7 +60,7 @@ hsm_generic_secret(
     wrapping_key = ":eg-aes-wrap-v0",
     wrapping_mechanism = select({
         "//:dev_env": "AesKeyWrap",
-        "//:prod_env": "VendorThalesAesKwp",
+        "//:prod_env": "VendorThalesAesKw",
         "//conditions:default": "AesKeyWrap",
     }),
 )

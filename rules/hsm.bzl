@@ -398,6 +398,7 @@ hsm_key_template = rule(
                 "AesKeyWrap",
                 "RsaPkcs",
                 "RsaPkcsOaep",
+                "VendorThalesAesKw",
                 "VendorThalesAesKwp",
             ],
         ),
@@ -924,22 +925,23 @@ def hsm_generic_secret(name, wrapping_key, wrapping_mechanism):
         wrapping_key: The key used to wrap the key.
         wrapping_mechanism: The mechanism used to wrap the key.
     """
+    _PK11_ATTRS = {
+        "CKA_DERIVE": True,
+        "CKA_SENSITIVE": True,
+        "CKA_SIGN": True,
+        "CKA_TOKEN": True,
+    }
+    if wrapping_mechanism == "VendorThalesAesKw":
+        _PK11_ATTRS["CKA_VALUE_LEN"] = 32
     hsm_key_template(
         name = name,
-        import_template = hsmtool_pk11_attrs({
-            "CKA_DERIVE": True,
-            "CKA_SENSITIVE": True,
-            "CKA_SIGN": True,
-            "CKA_TOKEN": True,
-            "CKA_EXTRACTABLE": False,
+        import_template = hsmtool_pk11_attrs(_PK11_ATTRS | {
+            "CKA_EXTRACTABLE": True,
         }),
         keygen_params = hsmtool_generic_keygen(
             label = name,
-            template = {
-                "CKA_DERIVE": True,
-                "CKA_SENSITIVE": True,
+            template = _PK11_ATTRS | {
                 "CKA_EXTRACTABLE": True,
-                "CKA_TOKEN": True,
             },
         ),
         type = "generic",
